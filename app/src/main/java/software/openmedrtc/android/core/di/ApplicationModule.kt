@@ -1,4 +1,4 @@
-package software.openmedrtc.android
+package software.openmedrtc.android.core.di
 
 import org.koin.dsl.module
 
