@@ -36,7 +36,7 @@ class PatientAdapter(private val context: Context): RecyclerView.Adapter<Patient
 
     class PatientViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(patient: Patient, clickListener: (Patient) -> Unit) {
-            view.txtOnlineStatus.text = "online"
+            view.txtOnlineStatus.text = view.context.getString(R.string.user_online)
             view.txtFullName.text = "${patient.firstName} ${patient.lastName}"
 
             view.btnCall.setOnClickListener { clickListener(patient) }
