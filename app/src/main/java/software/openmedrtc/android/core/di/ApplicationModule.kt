@@ -11,6 +11,8 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import software.openmedrtc.android.BuildConfig
+import software.openmedrtc.android.features.medical.MedicalViewModel
+import software.openmedrtc.android.features.medical.PatientAdapter
 import software.openmedrtc.android.features.patient.GetMedicals
 import software.openmedrtc.android.features.patient.MedicalsAdapter
 import software.openmedrtc.android.features.patient.PatientViewModel
@@ -57,9 +59,19 @@ val applicationModule = module(override = true) {
         PatientViewModel(get())
     }
 
+    viewModel {
+        MedicalViewModel()
+    }
+
     // Adapters
     factory {
         MedicalsAdapter(
+            androidApplication()
+        )
+    }
+
+    factory {
+        PatientAdapter(
             androidApplication()
         )
     }
