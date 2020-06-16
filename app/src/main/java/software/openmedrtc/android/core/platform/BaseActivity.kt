@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentTransaction
 
 open class BaseActivity: AppCompatActivity() {
 
+    // TODO duplicate code
     open fun openFragment(fragment: Fragment, containerId: Int) {
         val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
         transaction.replace(containerId, fragment)
