@@ -8,7 +8,7 @@ import software.openmedrtc.android.core.interactor.UseCase
 import software.openmedrtc.android.features.shared.Medical
 import software.openmedrtc.android.features.shared.UserRepository
 
-class getMedicals(
+class GetMedicals(
     private val medicalsRepository: UserRepository.Network,
     scope: CoroutineScope,
     dispatcher: CoroutineDispatcher

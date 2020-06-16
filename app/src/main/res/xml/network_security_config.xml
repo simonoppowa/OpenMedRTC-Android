@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--TODO remove / for testing only-->
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">XXX.XXX.XXX.XXX</domain>
+    </domain-config>
+</network-security-config>
