@@ -1,13 +1,13 @@
-package software.openmedrtc.android.core
+package software.openmedrtc.android.features.medical
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import software.openmedrtc.android.R
+import software.openmedrtc.android.core.platform.BaseFragment
 
-class PatientMainFragment : Fragment() {
+class MedicalMainFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,11 +18,11 @@ class PatientMainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_patient_main, container, false)
+        return inflater.inflate(R.layout.fragment_medical_main, container, false)
     }
 
     companion object {
         @JvmStatic
-        fun newInstance(param1: String, param2: String) {}
+        fun newInstance() = MedicalMainFragment()
     }
 }

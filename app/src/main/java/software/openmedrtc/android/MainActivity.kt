@@ -1,9 +1,9 @@
 package software.openmedrtc.android
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import software.openmedrtc.android.core.PatientMainFragment
 import software.openmedrtc.android.core.platform.BaseActivity
+import software.openmedrtc.android.features.medical.MedicalMainFragment
+import software.openmedrtc.android.features.patient.PatientMainFragment
 
 class MainActivity : BaseActivity() {
 
@@ -11,6 +11,6 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        openFragment(PatientMainFragment(), R.id.main_fragment_container)
+        openFragment(PatientMainFragment.newInstance(), R.id.main_fragment_container)
     }
 }
