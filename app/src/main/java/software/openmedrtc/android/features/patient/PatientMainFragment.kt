@@ -4,19 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.android.synthetic.main.fragment_medicals_list.*
 import kotlinx.android.synthetic.main.fragment_patient_main.*
 import org.koin.android.ext.android.get
 import software.openmedrtc.android.R
 import software.openmedrtc.android.core.platform.BaseFragment
-import timber.log.Timber
 
 class PatientMainFragment : BaseFragment() {
 
     private var patientViewModel: PatientViewModel = get() // TODO
-    private var medicalsAdapter: MedicalsAdapter = get()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

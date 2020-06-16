@@ -10,9 +10,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_medicals_list.*
 import org.koin.android.ext.android.get
 import software.openmedrtc.android.R
+import software.openmedrtc.android.core.platform.BaseFragment
 import timber.log.Timber
 
-class MedicalsListFragment : Fragment() {
+class MedicalsListFragment : BaseFragment() {
 
     private var patientViewModel: PatientViewModel = get()
     private var medicalsAdapter: MedicalsAdapter = get()
@@ -30,6 +31,7 @@ class MedicalsListFragment : Fragment() {
 
         initRecyclerView()
         observeMedicalsList()
+        observeFailure()
         patientViewModel.loadMedicals() // TODO
     }
 
@@ -44,6 +46,12 @@ class MedicalsListFragment : Fragment() {
     private fun observeMedicalsList() {
         patientViewModel.medicals.observe(this, Observer { medicals ->
             medicalsAdapter.collection = medicals
+        })
+    }
+
+    private fun observeFailure() {
+        patientViewModel.failure.observe(viewLifecycleOwner, Observer { failure ->
+            sendErrorToast(failure)
         })
     }
 
