@@ -5,11 +5,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import okhttp3.*
+import org.koin.android.ext.koin.androidApplication
+import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import software.openmedrtc.android.BuildConfig
 import software.openmedrtc.android.features.patient.GetMedicals
+import software.openmedrtc.android.features.patient.MedicalsAdapter
+import software.openmedrtc.android.features.patient.PatientViewModel
 import software.openmedrtc.android.features.shared.UserRepository
 import software.openmedrtc.android.features.shared.UserService
 import java.io.IOException
@@ -44,6 +48,23 @@ val applicationModule = module(override = true) {
     }
 
     factory {
+        GetMedicals(get(), get(), get())
+    }
+
+    // ViewModels
+    viewModel {
+        PatientViewModel()
+    }
+
+    // Adapters
+    factory {
+        MedicalsAdapter(
+            androidApplication()
+        )
+    }
+
+    // UseCases
+    single {
         GetMedicals(get(), get(), get())
     }
 
