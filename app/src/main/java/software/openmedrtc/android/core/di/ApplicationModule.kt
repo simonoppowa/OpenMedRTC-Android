@@ -47,13 +47,14 @@ val applicationModule = module(override = true) {
         UserRepository.Network(get())
     }
 
+    // UseCases
     factory {
         GetMedicals(get(), get(), get())
     }
 
     // ViewModels
     viewModel {
-        PatientViewModel()
+        PatientViewModel(get())
     }
 
     // Adapters
@@ -61,11 +62,6 @@ val applicationModule = module(override = true) {
         MedicalsAdapter(
             androidApplication()
         )
-    }
-
-    // UseCases
-    single {
-        GetMedicals(get(), get(), get())
     }
 
 }
