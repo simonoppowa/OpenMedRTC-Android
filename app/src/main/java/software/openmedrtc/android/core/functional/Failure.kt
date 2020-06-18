@@ -21,8 +21,9 @@ package software.openmedrtc.android.core.functional
  */
 sealed class Failure {
     // TODO
-    object NetworkConnection : Failure()
-    object ServerError : Failure()
+    object NetworkConnectionFailure : Failure()
+    object ServerFailure : Failure()
+    object WebsocketFailure : Failure()
 
     /** * Extend this class for feature specific failures.*/
     abstract class FeatureFailure: Failure()
