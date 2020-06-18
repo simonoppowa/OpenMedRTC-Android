@@ -18,6 +18,8 @@ import software.openmedrtc.android.features.patient.MedicalsAdapter
 import software.openmedrtc.android.features.patient.PatientViewModel
 import software.openmedrtc.android.features.shared.UserRepository
 import software.openmedrtc.android.features.shared.UserService
+import software.openmedrtc.android.features.shared.connection.GetWebsocketConnection
+import software.openmedrtc.android.features.shared.connection.WebsocketRepository
 import java.io.IOException
 
 private const val HTTP_PROTOCOL = "http://"
@@ -53,9 +55,17 @@ val applicationModule = module(override = true) {
         UserRepository.Network(get())
     }
 
+    single {
+        WebsocketRepository.WebsocketRepositoryImpl(get()) as WebsocketRepository
+    }
+
     // UseCases
     factory {
         GetMedicals(get(), get(), get())
+    }
+
+    factory {
+        GetWebsocketConnection(get(), get(), get())
     }
 
     // ViewModels
