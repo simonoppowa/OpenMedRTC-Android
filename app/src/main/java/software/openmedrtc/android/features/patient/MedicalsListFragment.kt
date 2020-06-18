@@ -38,8 +38,9 @@ class MedicalsListFragment : BaseFragment() {
     private fun initRecyclerView() {
         recyclerViewMedicals.layoutManager = LinearLayoutManager(context)
         recyclerViewMedicals.adapter = medicalsAdapter
-        medicalsAdapter.clickListener = {
-            Timber.d("Medical clicked: ${it.email}")
+        medicalsAdapter.clickListener = { medical ->
+            Timber.d("Medical clicked: ${medical.email}")
+            patientViewModel.openWebsocketConnection(medical)
         }
     }
 
