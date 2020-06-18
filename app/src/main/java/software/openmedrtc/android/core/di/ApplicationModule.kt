@@ -20,6 +20,10 @@ import software.openmedrtc.android.features.shared.UserRepository
 import software.openmedrtc.android.features.shared.UserService
 import java.io.IOException
 
+private const val HTTP_PROTOCOL = "http://"
+private const val PORT = "8080" // TODO
+
+
 val applicationModule = module(override = true) {
 
     // Connection
@@ -29,7 +33,7 @@ val applicationModule = module(override = true) {
 
     single {
         Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
+            .baseUrl("$HTTP_PROTOCOL${BuildConfig.BASE_URL}:$PORT")
             .client(get())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
