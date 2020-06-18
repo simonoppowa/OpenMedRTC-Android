@@ -20,6 +20,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "BASE_URL", keysProperties['BASE_URL'])
+        buildConfigField("String", "BASE_PORT", keysProperties['BASE_PORT'])
     }
 
     buildTypes {

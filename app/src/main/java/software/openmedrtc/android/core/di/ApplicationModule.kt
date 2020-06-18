@@ -22,8 +22,13 @@ import software.openmedrtc.android.features.shared.connection.GetWebsocketConnec
 import software.openmedrtc.android.features.shared.connection.WebsocketRepository
 import java.io.IOException
 
+// TODO remove mocked data
+private val DEVICE_NAME = "android_" + android.os.Build.VERSION.SDK_INT + "@gmail.com"
+private val USERNAME = DEVICE_NAME
+private const val PASSWORD = "test"
+
 private const val HTTP_PROTOCOL = "http://"
-private const val PORT = "8080" // TODO
+private const val PORT = BuildConfig.BASE_PORT
 
 
 val applicationModule = module(override = true) {
@@ -103,7 +108,7 @@ private fun createClient(): OkHttpClient {
 
                 println("Authenticating for response: $response")
                 println("Challenges: ${response.challenges()}")
-                val credential = Credentials.basic("android_29@gmail.com", "test") // TODO
+                val credential = Credentials.basic(USERNAME, PASSWORD)
                 return response.request.newBuilder()
                     .header("Authorization", credential)
                     .build()
