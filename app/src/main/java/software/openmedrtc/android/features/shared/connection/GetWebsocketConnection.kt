@@ -1,9 +1,7 @@
 package software.openmedrtc.android.features.shared.connection
 
-import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import okhttp3.WebSocket
 import software.openmedrtc.android.core.functional.Either
 import software.openmedrtc.android.core.functional.Failure
 import software.openmedrtc.android.core.interactor.UseCase
