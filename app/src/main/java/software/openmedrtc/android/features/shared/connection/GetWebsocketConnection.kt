@@ -15,5 +15,5 @@ class GetWebsocketConnection(
     override suspend fun run(params: Params): Either<Failure, Websocket> =
         websocketRepository.websocket(params.medKey)
 
-    data class Params(val medKey: String)
+    data class Params(val medKey: String = "")
 }

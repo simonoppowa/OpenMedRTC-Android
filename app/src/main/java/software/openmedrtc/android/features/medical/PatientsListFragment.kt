@@ -1,13 +1,11 @@
 package software.openmedrtc.android.features.medical
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.android.synthetic.main.fragment_medicals_list.*
 import kotlinx.android.synthetic.main.fragment_patients_list.*
 import org.koin.android.ext.android.get
 import software.openmedrtc.android.R
@@ -33,7 +31,7 @@ class PatientsListFragment : BaseFragment() {
         initRecyclerView()
         observePatientList()
         observeFailure()
-        medicalViewModel.loadPatients()
+        medicalViewModel.connectToWebsocket()
     }
 
     private fun initRecyclerView() {

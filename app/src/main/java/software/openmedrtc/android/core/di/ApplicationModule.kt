@@ -1,5 +1,6 @@
 package software.openmedrtc.android.core.di
 
+import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -46,6 +47,10 @@ val applicationModule = module(override = true) {
             .build()
     }
 
+    single {
+        Gson()
+    }
+
     // Coroutines
     factory { CoroutineScope(Dispatchers.IO + Job()) }
     factory { Dispatchers.Main as CoroutineDispatcher }
@@ -79,7 +84,7 @@ val applicationModule = module(override = true) {
     }
 
     viewModel {
-        MedicalViewModel()
+        MedicalViewModel(get(), get())
     }
 
     // Adapters

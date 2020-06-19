@@ -15,7 +15,15 @@ class Patient(
     firstName: String,
     lastName: String
 ) :
-    User(email, title, firstName, lastName)
+    User(email, title, firstName, lastName) {
+
+    constructor(patientDTO: PatientDTO) : this(
+        patientDTO.email,
+        patientDTO.title,
+        patientDTO.firstName,
+        patientDTO.lastName
+    )
+}
 
 class Medical(
     email: String,

@@ -7,14 +7,16 @@ import java.util.*
 
 class Websocket(client: OkHttpClient, url: String, socketListener: SocketListener) {
 
+    private val socketListeners = LinkedList<SocketListener>().apply {
+        add(socketListener)
+    }
+
     private var webSocket: WebSocket = client.newWebSocket(
         Request.Builder()
             .url(url)
             .build(),
         registerListener()
     )
-
-    private val socketListeners = LinkedList<SocketListener>()
 
     private fun registerListener(): WebSocketListener {
         return object : WebSocketListener() {

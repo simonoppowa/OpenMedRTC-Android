@@ -5,6 +5,7 @@ import okhttp3.Response
 import software.openmedrtc.android.BuildConfig
 import software.openmedrtc.android.core.functional.Either
 import software.openmedrtc.android.core.functional.Failure
+import timber.log.Timber
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -49,6 +50,7 @@ interface WebsocketRepository {
 
                 val socketListener = object : Websocket.SocketListener {
                     override fun onOpen(websocket: Websocket, response: Response) {
+                        websocket.removeLister(this)
                         cont.resume(websocket)
                     }
 
@@ -57,6 +59,7 @@ interface WebsocketRepository {
                         t: Throwable,
                         response: Response?
                     ) {
+                        websocket.removeLister(this)
                         cont.resume(websocket)
                     }
 
