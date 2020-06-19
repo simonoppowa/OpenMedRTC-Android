@@ -32,14 +32,15 @@ class MedicalsListFragment : BaseFragment() {
         initRecyclerView()
         observeMedicalsList()
         observeFailure()
-        patientViewModel.loadMedicals() // TODO
+        loadMedicalsOnline()
     }
 
     private fun initRecyclerView() {
         recyclerViewMedicals.layoutManager = LinearLayoutManager(context)
         recyclerViewMedicals.adapter = medicalsAdapter
-        medicalsAdapter.clickListener = {
-            Timber.d("Medical clicked: ${it.email}")
+        medicalsAdapter.clickListener = { medical ->
+            Timber.d("Medical clicked: ${medical.email}")
+            patientViewModel.openWebsocketConnection(medical)
         }
     }
 
@@ -47,6 +48,10 @@ class MedicalsListFragment : BaseFragment() {
         patientViewModel.medicals.observe(this, Observer { medicals ->
             medicalsAdapter.collection = medicals
         })
+    }
+
+    private fun loadMedicalsOnline() {
+        patientViewModel.loadMedicals()
     }
 
     private fun observeFailure() {

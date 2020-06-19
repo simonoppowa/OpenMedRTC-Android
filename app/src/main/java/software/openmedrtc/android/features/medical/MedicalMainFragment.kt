@@ -13,8 +13,6 @@ import software.openmedrtc.android.features.patient.PatientViewModel
 
 class MedicalMainFragment : BaseFragment() {
 
-    private var patientViewModel: PatientViewModel = get()
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

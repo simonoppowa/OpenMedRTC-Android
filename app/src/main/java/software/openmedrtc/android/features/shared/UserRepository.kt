@@ -28,11 +28,11 @@ interface UserRepository {
                 Timber.d("Server responded: ${response.body()}")
                 when (response.isSuccessful) {
                     true -> Either.Right(transform((response.body() ?: default)))
-                    else -> Either.Left(Failure.ServerError)
+                    else -> Either.Left(Failure.ServerFailure)
                 }
             } catch (exception: Throwable) {
                 Timber.e(exception)
-                Either.Left(Failure.ServerError)
+                Either.Left(Failure.ServerFailure)
             }
         }
 

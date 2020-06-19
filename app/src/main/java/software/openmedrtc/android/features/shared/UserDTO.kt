@@ -24,3 +24,18 @@ class MedicalDTO(
         medical.waitingTime
     )
 }
+
+class PatientDTO(
+    email: String,
+    title: String,
+    firstName: String,
+    lastName: String
+) : UserDTO(email, title, firstName, lastName) {
+
+    constructor(patient: Patient) : this(
+        patient.email,
+        patient.title,
+        patient.firstName,
+        patient.lastName
+    )
+}

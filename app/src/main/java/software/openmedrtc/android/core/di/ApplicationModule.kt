@@ -1,5 +1,6 @@
 package software.openmedrtc.android.core.di
 
+import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +19,18 @@ import software.openmedrtc.android.features.patient.MedicalsAdapter
 import software.openmedrtc.android.features.patient.PatientViewModel
 import software.openmedrtc.android.features.shared.UserRepository
 import software.openmedrtc.android.features.shared.UserService
+import software.openmedrtc.android.features.shared.connection.GetWebsocketConnection
+import software.openmedrtc.android.features.shared.connection.WebsocketRepository
 import java.io.IOException
+
+// TODO remove mocked data
+private val DEVICE_NAME = "android_" + android.os.Build.VERSION.SDK_INT + "@gmail.com"
+private val USERNAME = DEVICE_NAME
+private const val PASSWORD = "test"
+
+private const val HTTP_PROTOCOL = "http://"
+private const val PORT = BuildConfig.BASE_PORT
+
 
 val applicationModule = module(override = true) {
 
@@ -29,10 +41,14 @@ val applicationModule = module(override = true) {
 
     single {
         Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
+            .baseUrl("$HTTP_PROTOCOL${BuildConfig.BASE_URL}:$PORT")
             .client(get())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+    }
+
+    single {
+        Gson()
     }
 
     // Coroutines
@@ -49,18 +65,26 @@ val applicationModule = module(override = true) {
         UserRepository.Network(get())
     }
 
+    single {
+        WebsocketRepository.WebsocketRepositoryImpl(get()) as WebsocketRepository
+    }
+
     // UseCases
     factory {
         GetMedicals(get(), get(), get())
     }
 
+    factory {
+        GetWebsocketConnection(get(), get(), get())
+    }
+
     // ViewModels
     viewModel {
-        PatientViewModel(get())
+        PatientViewModel(get(), get())
     }
 
     viewModel {
-        MedicalViewModel()
+        MedicalViewModel(get(), get())
     }
 
     // Adapters
@@ -89,7 +113,7 @@ private fun createClient(): OkHttpClient {
 
                 println("Authenticating for response: $response")
                 println("Challenges: ${response.challenges()}")
-                val credential = Credentials.basic("android_29@gmail.com", "test") // TODO
+                val credential = Credentials.basic(USERNAME, PASSWORD)
                 return response.request.newBuilder()
                     .header("Authorization", credential)
                     .build()
