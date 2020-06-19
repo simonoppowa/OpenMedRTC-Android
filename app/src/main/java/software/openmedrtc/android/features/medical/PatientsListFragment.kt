@@ -39,6 +39,7 @@ class PatientsListFragment : BaseFragment() {
         recyclerViewPatients.adapter = patientsAdapter
         patientsAdapter.clickListener = {
             Timber.d("Patient clicked: ${it.email}")
+            // TODO init peer connection
         }
     }
 

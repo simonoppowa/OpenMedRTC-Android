@@ -4,11 +4,11 @@ import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import okhttp3.Response
-import software.openmedrtc.android.core.interactor.UseCase
 import software.openmedrtc.android.core.platform.BaseViewModel
 import software.openmedrtc.android.features.shared.Patient
 import software.openmedrtc.android.features.shared.PatientDTO
 import software.openmedrtc.android.features.shared.connection.DataMessage
+import software.openmedrtc.android.features.shared.connection.DataMessage.Companion.MESSAGE_TYPE_PATIENTS_LIST
 import software.openmedrtc.android.features.shared.connection.GetWebsocketConnection
 import software.openmedrtc.android.features.shared.connection.Websocket
 import timber.log.Timber
@@ -19,8 +19,6 @@ class MedicalViewModel(
 ) : BaseViewModel() {
 
     var patients: MutableLiveData<List<Patient>> = MutableLiveData()
-
-    private val MESSAGE_TYPE_PATIENTS_LIST = "PATIENTS_LIST" // TODO
 
     fun connectToWebsocket() {
         getWebsocketConnection(GetWebsocketConnection.Params()) {

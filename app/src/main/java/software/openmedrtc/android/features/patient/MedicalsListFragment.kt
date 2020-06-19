@@ -32,7 +32,7 @@ class MedicalsListFragment : BaseFragment() {
         initRecyclerView()
         observeMedicalsList()
         observeFailure()
-        patientViewModel.loadMedicals() // TODO
+        loadMedicalsOnline()
     }
 
     private fun initRecyclerView() {
@@ -48,6 +48,10 @@ class MedicalsListFragment : BaseFragment() {
         patientViewModel.medicals.observe(this, Observer { medicals ->
             medicalsAdapter.collection = medicals
         })
+    }
+
+    private fun loadMedicalsOnline() {
+        patientViewModel.loadMedicals()
     }
 
     private fun observeFailure() {
