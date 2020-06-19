@@ -9,7 +9,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_patients_list.*
 import org.koin.android.ext.android.get
 import software.openmedrtc.android.R
+import software.openmedrtc.android.VideoActivity
 import software.openmedrtc.android.core.platform.BaseFragment
+import software.openmedrtc.android.features.shared.Patient
 import timber.log.Timber
 
 class PatientsListFragment : BaseFragment() {
@@ -37,10 +39,14 @@ class PatientsListFragment : BaseFragment() {
     private fun initRecyclerView() {
         recyclerViewPatients.layoutManager = LinearLayoutManager(context)
         recyclerViewPatients.adapter = patientsAdapter
-        patientsAdapter.clickListener = {
-            Timber.d("Patient clicked: ${it.email}")
-            // TODO init peer connection
+        patientsAdapter.clickListener = {patient ->
+            Timber.d("Patient clicked: ${patient.email}")
+            startVideoActivity(patient)
         }
+    }
+
+    private fun startVideoActivity(patient: Patient) {
+        startActivity(VideoActivity.getIntent(context!!, patient))
     }
 
     private fun observePatientList() {

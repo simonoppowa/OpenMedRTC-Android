@@ -10,7 +10,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_medicals_list.*
 import org.koin.android.ext.android.get
 import software.openmedrtc.android.R
+import software.openmedrtc.android.VideoActivity
 import software.openmedrtc.android.core.platform.BaseFragment
+import software.openmedrtc.android.features.shared.Medical
 import timber.log.Timber
 
 class MedicalsListFragment : BaseFragment() {
@@ -40,7 +42,7 @@ class MedicalsListFragment : BaseFragment() {
         recyclerViewMedicals.adapter = medicalsAdapter
         medicalsAdapter.clickListener = { medical ->
             Timber.d("Medical clicked: ${medical.email}")
-            patientViewModel.openWebsocketConnection(medical)
+            startVideoActivity(medical)
         }
     }
 
@@ -58,6 +60,10 @@ class MedicalsListFragment : BaseFragment() {
         patientViewModel.failure.observe(viewLifecycleOwner, Observer { failure ->
             sendErrorToast(failure)
         })
+    }
+
+    private fun startVideoActivity(medical: Medical) {
+        startActivity(VideoActivity.getIntent(context!!, medical))
     }
 
     companion object {
