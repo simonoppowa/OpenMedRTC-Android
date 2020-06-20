@@ -16,7 +16,6 @@
         app:layout_constraintTop_toTopOf="parent">
 
     <!--        TODO-->
-    <!--        Patient-->
     <FrameLayout
         android:id="@+id/waiting_layout"
         android:layout_width="match_parent"
@@ -28,10 +27,22 @@
             android:text="Waiting..." />
     </FrameLayout>
 
-        <ImageView
-            android:id="@+id/surface_view_remote"
+<!--        Video-->
+        <FrameLayout
+            android:id="@+id/video_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content" >
+
+            <org.webrtc.SurfaceViewRenderer
+                android:id="@+id/surface_view_remote"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <org.webrtc.SurfaceViewRenderer
+                android:id="@+id/surface_view_local"
+                android:layout_width="150dp"
+                android:layout_height="200dp" />
+        </FrameLayout>
 
     </ViewSwitcher>
 
