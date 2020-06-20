@@ -23,12 +23,12 @@ class VideoActivity : BaseActivity() {
 
         // TODO
         when {
-            intent.hasExtra("medical") -> {
-                val medical = intent.getSerializableExtra("medical") as Medical
+            intent.hasExtra(MEDICAL_KEY) -> {
+                val medical = intent.getSerializableExtra(MEDICAL_KEY) as Medical
                 intiPatientConnection(medical)
             }
-            intent.hasExtra("patient") -> {
-                val patient = intent.getSerializableExtra("patient") as Patient
+            intent.hasExtra(PATIENT_KEY) -> {
+                val patient = intent.getSerializableExtra(PATIENT_KEY) as Patient
                 initMedicalConnection(patient)
             }
             else -> {
