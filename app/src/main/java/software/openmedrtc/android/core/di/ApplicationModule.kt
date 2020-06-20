@@ -27,6 +27,7 @@ import software.openmedrtc.android.features.shared.UserService
 import software.openmedrtc.android.features.shared.connection.*
 import software.openmedrtc.android.features.shared.connection.sdp.GetSessionDescription
 import software.openmedrtc.android.features.shared.connection.sdp.SessionDescriptionRepository
+import software.openmedrtc.android.features.shared.connection.sdp.SetSessionDescription
 import java.io.IOException
 
 // TODO remove mocked data
@@ -105,6 +106,10 @@ val applicationModule = module(override = true) {
         GetSessionDescription(get(), get(), get())
     }
 
+    factory {
+        SetSessionDescription(get(), get())
+    }
+
     // ViewModels
     viewModel {
         PatientViewModel(get(), get())
@@ -119,7 +124,7 @@ val applicationModule = module(override = true) {
     }
 
     viewModel {
-        MedicalConnectionViewModel(get(), get())
+        MedicalConnectionViewModel(get(), get(), get())
     }
 
     // Adapters
