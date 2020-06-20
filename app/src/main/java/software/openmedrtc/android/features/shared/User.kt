@@ -1,12 +1,14 @@
 package software.openmedrtc.android.features.shared
 
+import java.io.Serializable
+
 
 abstract class User(
     val email: String,
     val title: String,
     val firstName: String,
     val lastName: String
-)
+) : Serializable
 
 
 class Patient(
