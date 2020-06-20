@@ -45,7 +45,7 @@ class VideoActivity() : BaseActivity() {
     }
 
     private fun initMedicalConnection(patient: Patient) {
-        // TODO init peer connection
+        medicalConnectionViewModel.initPatientPeerConnection(patient)
     }
 
 
