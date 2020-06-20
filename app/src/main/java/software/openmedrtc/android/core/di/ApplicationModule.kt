@@ -20,6 +20,8 @@ import software.openmedrtc.android.features.patient.PatientViewModel
 import software.openmedrtc.android.features.shared.UserRepository
 import software.openmedrtc.android.features.shared.UserService
 import software.openmedrtc.android.features.shared.connection.GetWebsocketConnection
+import software.openmedrtc.android.features.shared.connection.MedicalConnectionViewModel
+import software.openmedrtc.android.features.shared.connection.PatientConnectionViewModel
 import software.openmedrtc.android.features.shared.connection.WebsocketRepository
 import java.io.IOException
 
@@ -85,6 +87,14 @@ val applicationModule = module(override = true) {
 
     viewModel {
         MedicalViewModel(get(), get())
+    }
+
+    viewModel {
+        PatientConnectionViewModel(get())
+    }
+
+    viewModel {
+        MedicalConnectionViewModel()
     }
 
     // Adapters

@@ -10,12 +10,14 @@ import software.openmedrtc.android.features.patient.PatientViewModel
 import software.openmedrtc.android.features.shared.Medical
 import software.openmedrtc.android.features.shared.Patient
 import software.openmedrtc.android.features.shared.User
+import software.openmedrtc.android.features.shared.connection.MedicalConnectionViewModel
+import software.openmedrtc.android.features.shared.connection.PatientConnectionViewModel
 import timber.log.Timber
 
-class VideoActivity : BaseActivity() {
+class VideoActivity() : BaseActivity() {
 
-    private val medicalViewModel: MedicalViewModel = get()
-    private val patientViewModel: PatientViewModel = get()
+    private val medicalConnectionViewModel: MedicalConnectionViewModel = get()
+    private val patientConnectionViewModel: PatientConnectionViewModel = get()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +41,7 @@ class VideoActivity : BaseActivity() {
     }
 
     private fun intiPatientConnection(medical: Medical) {
-        patientViewModel.openWebsocketConnection(medical)
+        patientConnectionViewModel.openWebsocketConnection(medical)
     }
 
     private fun initMedicalConnection(patient: Patient) {
