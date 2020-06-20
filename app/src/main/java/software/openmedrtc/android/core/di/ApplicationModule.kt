@@ -25,6 +25,8 @@ import software.openmedrtc.android.features.patient.PatientViewModel
 import software.openmedrtc.android.features.shared.UserRepository
 import software.openmedrtc.android.features.shared.UserService
 import software.openmedrtc.android.features.shared.connection.*
+import software.openmedrtc.android.features.shared.connection.sdp.GetSessionDescription
+import software.openmedrtc.android.features.shared.connection.sdp.SessionDescriptionRepository
 import java.io.IOException
 
 // TODO remove mocked data
@@ -81,6 +83,11 @@ val applicationModule = module(override = true) {
         WebsocketRepository.WebsocketRepositoryImpl(get()) as WebsocketRepository
     }
 
+    single {
+        SessionDescriptionRepository.SessionDescriptionRepositoryImpl()
+                as SessionDescriptionRepository
+    }
+
     // UseCases
     factory {
         GetMedicals(get(), get(), get())
@@ -92,6 +99,10 @@ val applicationModule = module(override = true) {
 
     factory {
         GetPeerConnection(get(), get(), get())
+    }
+
+    factory {
+        GetSessionDescription(get(), get(), get())
     }
 
     // ViewModels
@@ -108,7 +119,7 @@ val applicationModule = module(override = true) {
     }
 
     viewModel {
-        MedicalConnectionViewModel(get())
+        MedicalConnectionViewModel(get(), get())
     }
 
     // Adapters

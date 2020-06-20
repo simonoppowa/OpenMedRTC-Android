@@ -5,9 +5,12 @@ import org.webrtc.MediaStream
 import org.webrtc.PeerConnection
 import software.openmedrtc.android.core.platform.BaseViewModel
 import software.openmedrtc.android.features.shared.Patient
+import software.openmedrtc.android.features.shared.connection.sdp.GetSessionDescription
+import software.openmedrtc.android.features.shared.connection.sdp.SdpType
 
 class MedicalConnectionViewModel(
-    private val getPeerConnection: GetPeerConnection
+    private val getPeerConnection: GetPeerConnection,
+    private val getSessionDescription: GetSessionDescription
 ) : BaseViewModel() {
 
     fun initPatientPeerConnection(patient: Patient) {
@@ -28,7 +31,7 @@ class MedicalConnectionViewModel(
 
 
         getPeerConnection(peerConnectionObserver) {
-            it.fold(::handleFailure) {peerConnection ->
+            it.fold(::handleFailure) { peerConnection ->
                 createSessionDescription(peerConnection, patient)
             }
         }
@@ -39,6 +42,12 @@ class MedicalConnectionViewModel(
         peerConnection: PeerConnection,
         patient: Patient
     ) {
-        // TODO
+        getSessionDescription(
+            GetSessionDescription.Params(SdpType.OFFER, peerConnection)
+        ) {
+            it.fold(::handleFailure) { sessionDescription ->
+                // TODO set session description
+            }
+        }
     }
 }

@@ -25,6 +25,7 @@ sealed class Failure {
     object ServerFailure : Failure()
     object WebsocketFailure : Failure()
     object PeerConnectionFailure : Failure()
+    object SdpFailure : Failure()
 
     /** * Extend this class for feature specific failures.*/
     abstract class FeatureFailure: Failure()
