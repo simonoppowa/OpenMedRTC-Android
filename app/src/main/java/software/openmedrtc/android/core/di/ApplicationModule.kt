@@ -17,6 +17,7 @@ import org.webrtc.PeerConnectionFactory
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import software.openmedrtc.android.BuildConfig
+import software.openmedrtc.android.core.helper.JsonParser
 import software.openmedrtc.android.features.medical.MedicalViewModel
 import software.openmedrtc.android.features.medical.PatientAdapter
 import software.openmedrtc.android.features.patient.GetMedicals
@@ -32,8 +33,8 @@ import java.io.IOException
 
 // TODO remove mocked data
 private val DEVICE_NAME = "android_" + android.os.Build.VERSION.SDK_INT + "@gmail.com"
-private val USERNAME = DEVICE_NAME
-private const val PASSWORD = "test"
+val USERNAME = DEVICE_NAME
+const val PASSWORD = "test"
 
 private const val HTTP_PROTOCOL = "http://"
 private const val PORT = BuildConfig.BASE_PORT
@@ -56,6 +57,10 @@ val applicationModule = module(override = true) {
 
     single {
         Gson()
+    }
+
+    single {
+        JsonParser(get())
     }
 
     single {
@@ -124,7 +129,7 @@ val applicationModule = module(override = true) {
     }
 
     viewModel {
-        MedicalConnectionViewModel(get(), get(), get())
+        MedicalConnectionViewModel(get(), get(), get(), get(), get())
     }
 
     // Adapters
