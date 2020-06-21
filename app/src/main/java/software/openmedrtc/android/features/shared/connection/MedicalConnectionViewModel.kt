@@ -6,11 +6,14 @@ import software.openmedrtc.android.core.di.USERNAME
 import software.openmedrtc.android.core.helper.JsonParser
 import software.openmedrtc.android.core.platform.BaseViewModel
 import software.openmedrtc.android.features.shared.Patient
+import software.openmedrtc.android.features.shared.connection.DataMessage.Companion.MESSAGE_TYPE_ICE_CANDIDATE
+import software.openmedrtc.android.features.shared.connection.DataMessage.Companion.MESSAGE_TYPE_SDP_ANSWER
 import software.openmedrtc.android.features.shared.connection.DataMessage.Companion.MESSAGE_TYPE_SDP_OFFER
 import software.openmedrtc.android.features.shared.connection.sdp.GetSessionDescription
 import software.openmedrtc.android.features.shared.connection.sdp.SdpType
 import software.openmedrtc.android.features.shared.connection.sdp.SessionType
 import software.openmedrtc.android.features.shared.connection.sdp.SetSessionDescription
+import timber.log.Timber
 
 class MedicalConnectionViewModel(
     private val getPeerConnection: GetPeerConnection,
@@ -123,11 +126,43 @@ class MedicalConnectionViewModel(
             override fun onFailure(websocket: Websocket, t: Throwable, response: Response?) {}
 
             override fun onMessage(websocket: Websocket, text: String) {
-                // TODO
+                val dataMessage = jsonParser.parseDataMessage(text)
+
+                when (dataMessage?.messageType) {
+                    MESSAGE_TYPE_SDP_ANSWER -> {
+                        Timber.d("Sdp answer received")
+                        val sdpMessage = jsonParser.parseSdpMessage(dataMessage.json) ?: return
+
+                        val sessionDescription =
+                            jsonParser.parseSessionDescription(sdpMessage.sessionDescriptionString)
+                                ?: return
+
+                        setRemoteSessionDescription(peerConnection, sessionDescription)
+
+                    }
+                    MESSAGE_TYPE_ICE_CANDIDATE -> {
+                        // TODO handle ice exchange
+                    }
+                    else -> Timber.e("Wrong data message type")
+                }
+
             }
 
         })
     }
 
+    private fun setRemoteSessionDescription(
+        peerConnection: PeerConnection,
+        sessionDescription: SessionDescription
+    ) {
+        setSessionDescription(
+            SetSessionDescription.Params(
+            SessionType.REMOTE,
+                peerConnection,
+                sessionDescription
+        )) {
+            it.fold(::handleFailure, { })
+        }
+    }
 
 }
