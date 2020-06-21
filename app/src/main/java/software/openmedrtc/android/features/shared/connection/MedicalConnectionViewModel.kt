@@ -23,8 +23,16 @@ class MedicalConnectionViewModel(
     private val jsonParser: JsonParser
 ) : BaseViewModel() {
 
-    fun initPatientPeerConnection(patient: Patient) {
+    fun initPatientConnection(patient: Patient) {
 
+        getWebsocketConnection(GetWebsocketConnection.Params()) {
+            it.fold(::handleFailure) { websocket ->
+                getPeerConnection(websocket, patient)
+            }
+        }
+    }
+
+    private fun getPeerConnection(websocket: Websocket, patient: Patient) {
         val peerConnectionObserver = object : PeerConnectionObserver() {
             override fun onIceCandidate(p0: IceCandidate?) {
                 super.onIceCandidate(p0)
@@ -41,11 +49,10 @@ class MedicalConnectionViewModel(
 
         getPeerConnection(peerConnectionObserver) {
             it.fold(::handleFailure) { peerConnection ->
-                // TODO get websocket
-                //createSessionDescription(peerConnection, patient)
-                getWebsocketConnection(peerConnection, patient)
+                createSessionDescription(peerConnection, websocket, patient)
             }
         }
+
     }
 
     private fun getWebsocketConnection(peerConnection: PeerConnection, patient: Patient) {

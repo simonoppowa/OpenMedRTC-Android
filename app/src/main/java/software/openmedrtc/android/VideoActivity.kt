@@ -5,8 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import org.koin.android.ext.android.get
 import software.openmedrtc.android.core.platform.BaseActivity
-import software.openmedrtc.android.features.medical.MedicalViewModel
-import software.openmedrtc.android.features.patient.PatientViewModel
 import software.openmedrtc.android.features.shared.Medical
 import software.openmedrtc.android.features.shared.Patient
 import software.openmedrtc.android.features.shared.User
@@ -45,7 +43,7 @@ class VideoActivity() : BaseActivity() {
     }
 
     private fun initMedicalConnection(patient: Patient) {
-        medicalConnectionViewModel.initPatientPeerConnection(patient)
+        medicalConnectionViewModel.initPatientConnection(patient)
     }
 
 
