@@ -33,19 +33,7 @@ class MedicalConnectionViewModel(
     }
 
     private fun getPeerConnection(websocket: Websocket, patient: Patient) {
-        val peerConnectionObserver = object : PeerConnectionObserver() {
-            override fun onIceCandidate(p0: IceCandidate?) {
-                super.onIceCandidate(p0)
-            }
-
-            override fun onIceConnectionChange(p0: PeerConnection.IceConnectionState?) {
-                super.onIceConnectionChange(p0)
-            }
-
-            override fun onAddStream(p0: MediaStream?) {
-                super.onAddStream(p0)
-            }
-        }
+        val peerConnectionObserver = handlePeerConnectionChange(websocket, patient)
 
         getPeerConnection(peerConnectionObserver) {
             it.fold(::handleFailure) { peerConnection ->
@@ -53,14 +41,6 @@ class MedicalConnectionViewModel(
             }
         }
 
-    }
-
-    private fun getWebsocketConnection(peerConnection: PeerConnection, patient: Patient) {
-        getWebsocketConnection(GetWebsocketConnection.Params()) {
-            it.fold(::handleFailure) {websocket ->
-                createSessionDescription(peerConnection,websocket, patient)
-            }
-        }
     }
 
     private fun createSessionDescription(
@@ -122,6 +102,34 @@ class MedicalConnectionViewModel(
 
         websocketConnection.sendMessage(dataMessageJson)
     }
+
+    private fun handlePeerConnectionChange(
+        websocket: Websocket,
+        patient: Patient
+    ): PeerConnectionObserver =
+        object : PeerConnectionObserver() {
+            override fun onIceCandidate(p0: IceCandidate?) {
+                if(p0 == null) return
+                super.onIceCandidate(p0)
+
+                val iceJson = jsonParser.iceCandidateToJson(p0) ?: return
+                val iceMessage = IceMessage(USERNAME, patient.email, iceJson)
+                val iceMessageJson = jsonParser.iceMessageToJson(iceMessage) ?: return
+
+                val dataMessage = DataMessage(MESSAGE_TYPE_ICE_CANDIDATE, iceMessageJson)
+
+                val dataMessageJson = jsonParser.dataMessageToJson(dataMessage) ?: return
+                websocket.sendMessage(dataMessageJson)
+            }
+
+            override fun onIceConnectionChange(p0: PeerConnection.IceConnectionState?) {
+                super.onIceConnectionChange(p0)
+            }
+
+            override fun onAddStream(p0: MediaStream?) {
+                super.onAddStream(p0)
+            }
+        }
 
     private fun handleWebsocketConnection(
         websocketConnection: Websocket,
