@@ -136,12 +136,15 @@ class MedicalConnectionViewModel(
                         val sessionDescription =
                             jsonParser.parseSessionDescription(sdpMessage.sessionDescriptionString)
                                 ?: return
-
                         setRemoteSessionDescription(peerConnection, sessionDescription)
 
                     }
                     MESSAGE_TYPE_ICE_CANDIDATE -> {
-                        // TODO handle ice exchange
+                        Timber.d("Ice candidate received")
+                        val iceMessage = jsonParser.parseIceMessage(dataMessage.json) ?: return
+                        val iceCandidate =
+                            jsonParser.parseIceCandidate(iceMessage.iceCandidate) ?: return
+                        setIceCandidate(iceCandidate, peerConnection)
                     }
                     else -> Timber.e("Wrong data message type")
                 }
@@ -165,4 +168,11 @@ class MedicalConnectionViewModel(
         }
     }
 
+    private fun setIceCandidate(iceCandidate: IceCandidate, peerConnection: PeerConnection) {
+        if(peerConnection.addIceCandidate(iceCandidate)) {
+            Timber.d("Ice candidate set")
+        } else {
+            Timber.e("Error while setting ice candidate")
+        }
+    }
 }
