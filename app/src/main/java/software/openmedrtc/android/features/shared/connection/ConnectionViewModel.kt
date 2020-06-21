@@ -7,7 +7,6 @@ import org.webrtc.SessionDescription
 import software.openmedrtc.android.core.di.USERNAME
 import software.openmedrtc.android.core.helper.JsonParser
 import software.openmedrtc.android.core.platform.BaseViewModel
-import software.openmedrtc.android.features.shared.Patient
 import software.openmedrtc.android.features.shared.User
 import software.openmedrtc.android.features.shared.connection.sdp.GetSessionDescription
 import software.openmedrtc.android.features.shared.connection.sdp.SdpType
@@ -26,15 +25,15 @@ abstract class ConnectionViewModel(
         websocket: Websocket,
         user: User,
         peerConnectionObserver: PeerConnectionObserver,
-        handleWebSocketConnection: (Websocket, PeerConnection) -> Unit
-    ) {
-        getPeerConnection(peerConnectionObserver) {
-            it.fold(::handleFailure) { peerConnection ->
-                handleWebSocketConnection(websocket, peerConnection)
-                createSessionDescription(peerConnection, websocket, user)
-            }
-        }
+        onSuccess: (PeerConnection, Websocket, user : User) -> Unit
+    ) = getPeerConnection(peerConnectionObserver)
+    {
+        it.fold(::handleFailure) { peerConnection ->
 
+            //handleWebSocketConnection(websocket, peerConnection)
+            //createSessionDescription(peerConnection, websocket, user)
+            onSuccess(peerConnection, websocket, user)
+        }
     }
 
     open fun getPeerConnectionObserver(
@@ -68,18 +67,21 @@ abstract class ConnectionViewModel(
     open fun createSessionDescription(
         peerConnection: PeerConnection,
         websocketConnection: Websocket,
-        user: User
+        user: User,
+        sdpType: SdpType,
+        onSuccess: (PeerConnection, Websocket, SessionDescription, User) -> Unit
     ) {
         getSessionDescription(
-            GetSessionDescription.Params(SdpType.OFFER, peerConnection)
+            GetSessionDescription.Params(sdpType, peerConnection)
         ) {
             it.fold(::handleFailure) { sessionDescription ->
-                setLocalSessionDescription(
-                    peerConnection,
-                    websocketConnection,
-                    sessionDescription,
-                    user
-                )
+                onSuccess(peerConnection, websocketConnection, sessionDescription, user)
+//                setLocalSessionDescription(
+//                    peerConnection,
+//                    websocketConnection,
+//                    sessionDescription,
+//                    user
+//                )
             }
         }
     }
@@ -88,7 +90,8 @@ abstract class ConnectionViewModel(
         peerConnection: PeerConnection,
         websocketConnection: Websocket,
         sessionDescription: SessionDescription,
-        user: User
+        user: User,
+        onSuccess: ((PeerConnection, Websocket, SessionDescription, User) -> Unit)? = null
     ) {
         setSessionDescription(
             SetSessionDescription.Params(
@@ -98,14 +101,25 @@ abstract class ConnectionViewModel(
             )
         ) {
             it.fold(::handleFailure) {
-                sendSdpOffer(sessionDescription, user, peerConnection, websocketConnection)
+                if (onSuccess != null) {
+                    onSuccess(
+                        peerConnection,
+                        websocketConnection,
+                        sessionDescription,
+                        user
+                    )
+                }
+                //sendSdpOffer(sessionDescription, user, peerConnection, websocketConnection)
             }
         }
     }
 
     open fun setRemoteSessionDescription(
         peerConnection: PeerConnection,
-        sessionDescription: SessionDescription
+        websocket: Websocket,
+        sessionDescription: SessionDescription,
+        user: User,
+        onSuccess: ((PeerConnection, Websocket, SessionDescription, User) -> Unit)? = null
     ) {
         setSessionDescription(
             SetSessionDescription.Params(
@@ -114,7 +128,9 @@ abstract class ConnectionViewModel(
                 sessionDescription
             )
         ) {
-            it.fold(::handleFailure, { })
+            it.fold(::handleFailure) {
+                if(onSuccess != null) onSuccess(peerConnection, websocket, sessionDescription, user)
+            }
         }
     }
 
@@ -126,13 +142,20 @@ abstract class ConnectionViewModel(
         }
     }
 
-    open fun sendSdpOffer(
+    open fun sendSdpMessage(
         sessionDescription: SessionDescription,
         user: User,
         peerConnection: PeerConnection,
-        websocketConnection: Websocket
+        websocketConnection: Websocket,
+        sdpType: SdpType
     ) {
         // TODO handle exception
+        val dataMessageType = if (sdpType == SdpType.OFFER) {
+            DataMessage.MESSAGE_TYPE_SDP_OFFER
+        } else {
+            DataMessage.MESSAGE_TYPE_SDP_ANSWER
+        }
+
         val sdpMessage = SdpMessage(
             USERNAME,
             user.email,
@@ -141,7 +164,7 @@ abstract class ConnectionViewModel(
 
         val dataMessage =
             DataMessage(
-                DataMessage.MESSAGE_TYPE_SDP_OFFER,
+                dataMessageType,
                 jsonParser.sdpMessageToJson(sdpMessage) ?: return
             )
         val dataMessageJson = jsonParser.dataMessageToJson(dataMessage) ?: return

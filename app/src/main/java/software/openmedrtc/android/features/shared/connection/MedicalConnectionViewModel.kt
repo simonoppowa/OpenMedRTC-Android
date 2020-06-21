@@ -2,12 +2,13 @@ package software.openmedrtc.android.features.shared.connection
 
 import okhttp3.Response
 import org.webrtc.*
-import software.openmedrtc.android.core.di.USERNAME
 import software.openmedrtc.android.core.helper.JsonParser
 import software.openmedrtc.android.features.shared.Patient
+import software.openmedrtc.android.features.shared.User
 import software.openmedrtc.android.features.shared.connection.DataMessage.Companion.MESSAGE_TYPE_ICE_CANDIDATE
 import software.openmedrtc.android.features.shared.connection.DataMessage.Companion.MESSAGE_TYPE_SDP_ANSWER
 import software.openmedrtc.android.features.shared.connection.sdp.GetSessionDescription
+import software.openmedrtc.android.features.shared.connection.sdp.SdpType
 import software.openmedrtc.android.features.shared.connection.sdp.SetSessionDescription
 import timber.log.Timber
 
@@ -25,21 +26,65 @@ class MedicalConnectionViewModel(
 ) {
 
     fun initPatientConnection(patient: Patient) {
+        getWebsocketConnection(patient)
+    }
+
+    private fun getWebsocketConnection(patient: Patient) {
         getWebsocketConnection(GetWebsocketConnection.Params()) {
             it.fold(::handleFailure) { websocket ->
                 getPeerConnection(
                     websocket,
                     patient,
                     getPeerConnectionObserver(websocket, patient),
-                    ::handleWebsocketConnection
+                    ::onGotWebsocketConnection
                 )
             }
         }
     }
 
+    private fun onGotWebsocketConnection(
+        peerConnection: PeerConnection,
+        websocketConnection: Websocket,
+        user: User
+    ) {
+        handleWebsocketConnection(websocketConnection, peerConnection, user)
+        createSessionDescription(
+            peerConnection,
+            websocketConnection,
+            user,
+            SdpType.OFFER,
+            ::onCreateSessionDescriptionSuccess
+        )
+    }
+
+    private fun onCreateSessionDescriptionSuccess(
+        peerConnection: PeerConnection,
+        websocket: Websocket,
+        sessionDescription: SessionDescription,
+        user: User
+    ) {
+        setLocalSessionDescription(
+            peerConnection,
+            websocket,
+            sessionDescription,
+            user,
+            ::onSetLocalSessionDescriptionSuccess
+        )
+    }
+
+    private fun onSetLocalSessionDescriptionSuccess(
+        peerConnection: PeerConnection,
+        websocketConnection: Websocket,
+        sessionDescription: SessionDescription,
+        user: User
+    ) {
+        sendSdpMessage(sessionDescription, user, peerConnection, websocketConnection, SdpType.OFFER)
+    }
+
     private fun handleWebsocketConnection(
         websocketConnection: Websocket,
-        peerConnection: PeerConnection
+        peerConnection: PeerConnection,
+        user: User
     ) {
         websocketConnection.addListener(object : Websocket.SocketListener {
             override fun onOpen(websocket: Websocket, response: Response) {}
@@ -57,8 +102,7 @@ class MedicalConnectionViewModel(
                         val sessionDescription =
                             jsonParser.parseSessionDescription(sdpMessage.sessionDescriptionString)
                                 ?: return
-                        setRemoteSessionDescription(peerConnection, sessionDescription)
-
+                        setRemoteSessionDescription(peerConnection, websocket, sessionDescription, user)
                     }
                     MESSAGE_TYPE_ICE_CANDIDATE -> {
                         Timber.d("Ice candidate received")
