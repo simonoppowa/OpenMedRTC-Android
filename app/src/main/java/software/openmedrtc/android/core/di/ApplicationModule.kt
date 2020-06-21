@@ -125,7 +125,7 @@ val applicationModule = module(override = true) {
     }
 
     viewModel {
-        PatientConnectionViewModel(get())
+        PatientConnectionViewModel(get(), get(), get())
     }
 
     viewModel {
