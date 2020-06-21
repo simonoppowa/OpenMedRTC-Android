@@ -1,67 +1,78 @@
 package software.openmedrtc.android.features.shared.connection
 
-import org.webrtc.IceCandidate
-import org.webrtc.MediaStream
+
+import okhttp3.Response
 import org.webrtc.PeerConnection
-import software.openmedrtc.android.core.di.USERNAME
 import software.openmedrtc.android.core.helper.JsonParser
-import software.openmedrtc.android.core.platform.BaseViewModel
 import software.openmedrtc.android.features.shared.Medical
+import software.openmedrtc.android.features.shared.connection.DataMessage.Companion.MESSAGE_TYPE_ICE_CANDIDATE
+import software.openmedrtc.android.features.shared.connection.DataMessage.Companion.MESSAGE_TYPE_SDP_OFFER
+import software.openmedrtc.android.features.shared.connection.sdp.GetSessionDescription
+import software.openmedrtc.android.features.shared.connection.sdp.SetSessionDescription
 import timber.log.Timber
 
 class PatientConnectionViewModel(
+    getPeerConnection: GetPeerConnection,
+    getSessionDescription: GetSessionDescription,
+    setSessionDescription: SetSessionDescription,
     private val getWebsocketConnection: GetWebsocketConnection,
-    private val getPeerConnection: GetPeerConnection,
     private val jsonParser: JsonParser
 ) :
-    BaseViewModel() {
+    ConnectionViewModel(
+        getPeerConnection,
+        getSessionDescription,
+        setSessionDescription,
+        jsonParser
+    ) {
 
-    fun openWebsocketConnection(medical: Medical) {
+    fun initMedicalConnection(medical: Medical) {
         getWebsocketConnection(GetWebsocketConnection.Params(medKey = medical.email)) {
             it.fold(::handleFailure) { websocket ->
-                getPeerConnection(websocket, medical)
+                getPeerConnection(
+                    websocket,
+                    medical,
+                    getPeerConnectionObserver(websocket, medical),
+                    ::handleWebsocketConnection
+                )
             }
         }
     }
 
-    private fun handleWebsocketConnection(websocket: Websocket, medical: Medical) {
-        // TODO 
-    }
+    private fun handleWebsocketConnection(websocket: Websocket, peerConnection: PeerConnection) {
+        Timber.d("Got connection $websocket")
 
-    private fun getPeerConnection(websocket: Websocket, medical: Medical) {
-        val peerConnectionObserver = handlePeerConnectionChange(websocket, medical)
-        getPeerConnection(peerConnectionObserver) {
-            it.fold(::handleFailure) { peerConnection ->
-                // TODO create sessiondescription
+        websocket.addListener(object : Websocket.SocketListener {
+            override fun onOpen(websocket: Websocket, response: Response) {}
+            override fun onFailure(websocket: Websocket, t: Throwable, response: Response?) {}
+
+            override fun onMessage(websocket: Websocket, text: String) {
+                val dataMessage = jsonParser.parseDataMessage(text)
+                when (dataMessage?.messageType) {
+                    MESSAGE_TYPE_SDP_OFFER -> {
+                        Timber.d("Sdp Offer received")
+
+                        val sdpOffer = (jsonParser.parseSdpMessage(dataMessage.json)) ?: return
+                        val sessionDescription =
+                            jsonParser.parseSessionDescription(sdpOffer.sessionDescriptionString)
+                                ?: return
+
+                        setRemoteSessionDescription(peerConnection, sessionDescription)
+                    }
+                    MESSAGE_TYPE_ICE_CANDIDATE -> {
+                        Timber.d("Ice candidate received")
+
+                        val iceMessage = jsonParser.parseIceMessage(dataMessage.json) ?: return
+                        val iceCandidate =
+                            jsonParser.parseIceCandidate(iceMessage.iceCandidate) ?: return
+                        setIceCandidate(iceCandidate, peerConnection)
+                    }
+                    else -> {
+                        Timber.e("Wrong data message type")
+                    }
+                }
             }
-        }
+        })
     }
 
-    // TODO duplicate code
-    private fun handlePeerConnectionChange(
-        websocket: Websocket,
-        medical: Medical
-    ): PeerConnectionObserver = object : PeerConnectionObserver() {
-        override fun onIceCandidate(p0: IceCandidate?) {
-            if(p0 == null) return
-            super.onIceCandidate(p0)
 
-            val iceJson = jsonParser.iceCandidateToJson(p0) ?: return
-            val iceMessage = IceMessage(USERNAME, medical.email, iceJson)
-            val iceMessageJson = jsonParser.iceMessageToJson(iceMessage) ?: return
-
-            val dataMessage = DataMessage(DataMessage.MESSAGE_TYPE_ICE_CANDIDATE, iceMessageJson)
-
-            val dataMessageJson = jsonParser.dataMessageToJson(dataMessage) ?: return
-            websocket.sendMessage(dataMessageJson)
-        }
-
-        override fun onIceConnectionChange(p0: PeerConnection.IceConnectionState?) {
-            super.onIceConnectionChange(p0)
-        }
-
-        override fun onAddStream(p0: MediaStream?) {
-            super.onAddStream(p0)
-        }
-    }
 }

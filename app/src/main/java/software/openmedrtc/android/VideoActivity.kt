@@ -39,7 +39,7 @@ class VideoActivity() : BaseActivity() {
     }
 
     private fun intiPatientConnection(medical: Medical) {
-        patientConnectionViewModel.openWebsocketConnection(medical)
+        patientConnectionViewModel.initMedicalConnection(medical)
     }
 
     private fun initMedicalConnection(patient: Patient) {

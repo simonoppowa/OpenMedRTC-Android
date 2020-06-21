@@ -39,7 +39,7 @@ abstract class ConnectionViewModel(
 
     open fun getPeerConnectionObserver(
         websocket: Websocket,
-        patient: Patient
+        user: User
     ): PeerConnectionObserver =
         object : PeerConnectionObserver() {
             override fun onIceCandidate(p0: IceCandidate?) {
@@ -47,7 +47,7 @@ abstract class ConnectionViewModel(
                 super.onIceCandidate(p0)
 
                 val iceJson = jsonParser.iceCandidateToJson(p0) ?: return
-                val iceMessage = IceMessage(USERNAME, patient.email, iceJson)
+                val iceMessage = IceMessage(USERNAME, user.email, iceJson)
                 val iceMessageJson = jsonParser.iceMessageToJson(iceMessage) ?: return
 
                 val dataMessage = DataMessage(DataMessage.MESSAGE_TYPE_ICE_CANDIDATE, iceMessageJson)
@@ -132,8 +132,6 @@ abstract class ConnectionViewModel(
         peerConnection: PeerConnection,
         websocketConnection: Websocket
     ) {
-        // handleWebsocketConnection(websocketConnection, peerConnection)
-
         // TODO handle exception
         val sdpMessage = SdpMessage(
             USERNAME,
