@@ -21,6 +21,7 @@ android {
 
         buildConfigField("String", "BASE_URL", keysProperties['BASE_URL'])
         buildConfigField("String", "BASE_PORT", keysProperties['BASE_PORT'])
+        buildConfigField("String", "STUN_SERVER", keysProperties['STUN_SERVER'])
     }
 
     buildTypes {

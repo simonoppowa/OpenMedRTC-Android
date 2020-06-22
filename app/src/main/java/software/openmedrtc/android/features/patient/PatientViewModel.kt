@@ -20,16 +20,6 @@ class PatientViewModel(
         }
     }
 
-    fun openWebsocketConnection(medical: Medical) {
-        getWebsocketConnection(GetWebsocketConnection.Params(medKey = medical.email)) {
-            it.fold(::handleFailure, ::handleWebsocketConnection)
-        }
-    }
-
-    private fun handleWebsocketConnection(websocket: Websocket) {
-        // TODO init peerConnection
-    }
-
     private fun handleMedicals(medicals: List<Medical>) {
         this.medicals.value = medicals
     }
