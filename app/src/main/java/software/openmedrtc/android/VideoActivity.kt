@@ -34,17 +34,16 @@ class VideoActivity : BaseActivity() {
         setContentView(R.layout.activity_video)
 
         initVideoViews()
-        // TODO
         when {
             intent.hasExtra(MEDICAL_KEY) -> {
                 val medical = intent.getSerializableExtra(MEDICAL_KEY) as Medical
                 connectionViewModel = get() as PatientConnectionViewModel
-                intiPatientConnection(medical)
+                initConnection(medical)
             }
             intent.hasExtra(PATIENT_KEY) -> {
                 val patient = intent.getSerializableExtra(PATIENT_KEY) as Patient
                 connectionViewModel = get() as MedicalConnectionViewModel
-                initMedicalConnection(patient)
+                initConnection(patient)
             }
             else -> {
                 Timber.e("No intent passed")
@@ -60,18 +59,12 @@ class VideoActivity : BaseActivity() {
         surface_view_remote.setZOrderMediaOverlay(true)
     }
 
-    private fun intiPatientConnection(medical: Medical) {
-        connectionViewModel.initConnection(medical)
-        observePatientConnection()
+    private fun initConnection(user: User) {
+        connectionViewModel.initConnection(user)
+        observeConnection()
     }
 
-    private fun initMedicalConnection(patient: Patient) {
-        connectionViewModel.initConnection(patient)
-        observeMedicalConnection()
-    }
-
-    // TODO duplicate code
-    private fun observePatientConnection() {
+    private fun observeConnection() {
         connectionViewModel.peerConnection.observe(
             this,
             Observer { peerConnection ->
@@ -88,15 +81,6 @@ class VideoActivity : BaseActivity() {
             this,
             Observer {
                 if(it == true) view_switcher.showNext()
-            }
-        )
-    }
-
-    private fun observeMedicalConnection() {
-        connectionViewModel.peerConnection.observe(
-            this,
-            Observer { peerConnection ->
-                // initVideoCapture(peerConnection)
             }
         )
     }
