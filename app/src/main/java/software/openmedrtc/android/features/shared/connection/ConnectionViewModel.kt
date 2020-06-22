@@ -2,8 +2,6 @@ package software.openmedrtc.android.features.shared.connection
 
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.webrtc.*
 import software.openmedrtc.android.core.di.USERNAME
 import software.openmedrtc.android.core.helper.JsonParser
@@ -14,10 +12,9 @@ import software.openmedrtc.android.features.shared.connection.sdp.SdpType
 import software.openmedrtc.android.features.shared.connection.sdp.SessionType
 import software.openmedrtc.android.features.shared.connection.sdp.SetSessionDescription
 import timber.log.Timber
-import java.lang.ClassCastException
-import java.lang.Exception
 
 abstract class ConnectionViewModel(
+    private val getWebsocketConnection: GetWebsocketConnection,
     private val getPeerConnection: GetPeerConnection,
     private val getSessionDescription: GetSessionDescription,
     private val setSessionDescription: SetSessionDescription,
@@ -30,11 +27,25 @@ abstract class ConnectionViewModel(
     val connectionReady: MutableLiveData<Boolean> = MutableLiveData()
     val peerConnection: MutableLiveData<PeerConnection> = MutableLiveData()
 
+    abstract fun initConnection(user: User)
+
+    open fun getWebsocketConnection(
+        user: User,
+        params: GetWebsocketConnection.Params,
+        onSuccess: (Websocket, User) -> Unit
+    ){
+        return getWebsocketConnection(params) {
+            it.fold(::handleFailure) { websocket ->
+                onSuccess(websocket, user)
+            }
+        }
+    }
+
     open fun getPeerConnection(
         websocket: Websocket,
         user: User,
         peerConnectionObserver: PeerConnectionObserver,
-        onSuccess: (PeerConnection, Websocket, user : User) -> Unit
+        onSuccess: (PeerConnection, Websocket, User) -> Unit
     ) = getPeerConnection(peerConnectionObserver)
     {
         it.fold(::handleFailure) { peerConnection ->

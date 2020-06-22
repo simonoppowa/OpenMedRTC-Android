@@ -15,6 +15,7 @@ import software.openmedrtc.android.core.platform.BaseActivity
 import software.openmedrtc.android.features.shared.Medical
 import software.openmedrtc.android.features.shared.Patient
 import software.openmedrtc.android.features.shared.User
+import software.openmedrtc.android.features.shared.connection.ConnectionViewModel
 import software.openmedrtc.android.features.shared.connection.MedicalConnectionViewModel
 import software.openmedrtc.android.features.shared.connection.PatientConnectionViewModel
 import timber.log.Timber
@@ -26,9 +27,7 @@ class VideoActivity : BaseActivity() {
     private val surfaceTextureHelper: SurfaceTextureHelper = get()
     private val frontVideoCapturer: FrontVideoCapturer = get()
 
-
-    private val medicalConnectionViewModel: MedicalConnectionViewModel = get()
-    private val patientConnectionViewModel: PatientConnectionViewModel = get()
+    private lateinit var connectionViewModel: ConnectionViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,10 +38,12 @@ class VideoActivity : BaseActivity() {
         when {
             intent.hasExtra(MEDICAL_KEY) -> {
                 val medical = intent.getSerializableExtra(MEDICAL_KEY) as Medical
+                connectionViewModel = get() as PatientConnectionViewModel
                 intiPatientConnection(medical)
             }
             intent.hasExtra(PATIENT_KEY) -> {
                 val patient = intent.getSerializableExtra(PATIENT_KEY) as Patient
+                connectionViewModel = get() as MedicalConnectionViewModel
                 initMedicalConnection(patient)
             }
             else -> {
@@ -60,30 +61,30 @@ class VideoActivity : BaseActivity() {
     }
 
     private fun intiPatientConnection(medical: Medical) {
-        patientConnectionViewModel.initMedicalConnection(medical)
+        connectionViewModel.initConnection(medical)
         observePatientConnection()
     }
 
     private fun initMedicalConnection(patient: Patient) {
-        medicalConnectionViewModel.initPatientConnection(patient)
+        connectionViewModel.initConnection(patient)
         observeMedicalConnection()
     }
 
     // TODO duplicate code
     private fun observePatientConnection() {
-        patientConnectionViewModel.peerConnection.observe(
+        connectionViewModel.peerConnection.observe(
             this,
             Observer { peerConnection ->
                 initVideoCapture(peerConnection)
             }
         )
-        patientConnectionViewModel.remoteMediaStream.observe(
+        connectionViewModel.remoteMediaStream.observe(
             this,
             Observer { mediaStream ->
                 mediaStream.videoTracks[0].addSink(surface_view_remote)
             }
         )
-        patientConnectionViewModel.connectionReady.observe(
+        connectionViewModel.connectionReady.observe(
             this,
             Observer {
                 if(it == true) view_switcher.showNext()
@@ -92,7 +93,7 @@ class VideoActivity : BaseActivity() {
     }
 
     private fun observeMedicalConnection() {
-        medicalConnectionViewModel.peerConnection.observe(
+        connectionViewModel.peerConnection.observe(
             this,
             Observer { peerConnection ->
                 // initVideoCapture(peerConnection)
@@ -104,7 +105,7 @@ class VideoActivity : BaseActivity() {
         val videoCapturerAndroid = frontVideoCapturer.createCameraCapturer() ?: return // TODO
 
         val videoSource =
-            patientConnectionViewModel.peerConnectionFactory
+            connectionViewModel.peerConnectionFactory
                 .createVideoSource(videoCapturerAndroid.isScreencast)
         videoCapturerAndroid.initialize(
             surfaceTextureHelper,
@@ -112,15 +113,15 @@ class VideoActivity : BaseActivity() {
             videoSource.capturerObserver
         )
         val localVideoTrack =
-            patientConnectionViewModel.peerConnectionFactory
+            connectionViewModel.peerConnectionFactory
                 .createVideoTrack("100", videoSource)
 
-        val audioSource = patientConnectionViewModel.peerConnectionFactory
+        val audioSource = connectionViewModel.peerConnectionFactory
             .createAudioSource(mediaConstraints)
-        val localAudioTrack = patientConnectionViewModel.peerConnectionFactory
+        val localAudioTrack = connectionViewModel.peerConnectionFactory
             .createAudioTrack("101", audioSource)
 
-        val stream = patientConnectionViewModel.peerConnectionFactory
+        val stream = connectionViewModel.peerConnectionFactory
             .createLocalMediaStream("102")
         stream.addTrack(localAudioTrack)
         stream.addTrack(localVideoTrack)

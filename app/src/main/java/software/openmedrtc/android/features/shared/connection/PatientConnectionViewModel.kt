@@ -17,15 +17,16 @@ import software.openmedrtc.android.features.shared.connection.sdp.SetSessionDesc
 import timber.log.Timber
 
 class PatientConnectionViewModel(
+    getWebsocketConnection: GetWebsocketConnection,
     getPeerConnection: GetPeerConnection,
     getSessionDescription: GetSessionDescription,
     setSessionDescription: SetSessionDescription,
     peerConnectionFactory: PeerConnectionFactory,
     coroutineScope: CoroutineScope,
-    private val getWebsocketConnection: GetWebsocketConnection,
     private val jsonParser: JsonParser
 ) :
     ConnectionViewModel(
+        getWebsocketConnection,
         getPeerConnection,
         getSessionDescription,
         setSessionDescription,
@@ -34,21 +35,21 @@ class PatientConnectionViewModel(
         peerConnectionFactory
     ) {
 
-    fun initMedicalConnection(medical: Medical) {
-        getWebsocketConnection(medical)
+    override fun initConnection(user: User) {
+        getWebsocketConnection(
+            user,
+            GetWebsocketConnection.Params(medKey = user.email),
+            ::onGetWebsocketConnectionSuccess
+        )
     }
 
-    private fun getWebsocketConnection(medical: Medical) {
-        getWebsocketConnection(GetWebsocketConnection.Params(medKey = medical.email)) {
-            it.fold(::handleFailure) { websocket ->
-                getPeerConnection(
-                    websocket,
-                    medical,
-                    getPeerConnectionObserver(websocket, medical),
-                    ::onGetPeerConnectionSuccess
-                )
-            }
-        }
+    private fun onGetWebsocketConnectionSuccess(websocket: Websocket, user: User) {
+        getPeerConnection(
+            websocket,
+            user,
+            getPeerConnectionObserver(websocket, user),
+            ::onGetPeerConnectionSuccess
+        )
     }
 
     private fun onGetPeerConnectionSuccess(

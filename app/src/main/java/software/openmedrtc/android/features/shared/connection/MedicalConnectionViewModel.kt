@@ -4,7 +4,6 @@ import kotlinx.coroutines.CoroutineScope
 import okhttp3.Response
 import org.webrtc.*
 import software.openmedrtc.android.core.helper.JsonParser
-import software.openmedrtc.android.features.shared.Patient
 import software.openmedrtc.android.features.shared.User
 import software.openmedrtc.android.features.shared.connection.DataMessage.Companion.MESSAGE_TYPE_ICE_CANDIDATE
 import software.openmedrtc.android.features.shared.connection.DataMessage.Companion.MESSAGE_TYPE_SDP_ANSWER
@@ -14,14 +13,15 @@ import software.openmedrtc.android.features.shared.connection.sdp.SetSessionDesc
 import timber.log.Timber
 
 class MedicalConnectionViewModel(
+    getWebsocketConnection: GetWebsocketConnection,
     getPeerConnection: GetPeerConnection,
     getSessionDescription: GetSessionDescription,
     setSessionDescription: SetSessionDescription,
     peerConnectionFactory: PeerConnectionFactory,
     coroutineScope: CoroutineScope,
-    private val getWebsocketConnection: GetWebsocketConnection,
     private val jsonParser: JsonParser
 ) : ConnectionViewModel(
+    getWebsocketConnection,
     getPeerConnection,
     getSessionDescription,
     setSessionDescription,
@@ -30,24 +30,27 @@ class MedicalConnectionViewModel(
     peerConnectionFactory
 ) {
 
-    fun initPatientConnection(patient: Patient) {
-        getWebsocketConnection(patient)
+    override fun initConnection(user: User) {
+        getWebsocketConnection(
+            user,
+            GetWebsocketConnection.Params(),
+            ::onGotWebsocketConnectionSuccess
+        )
     }
 
-    private fun getWebsocketConnection(patient: Patient) {
-        getWebsocketConnection(GetWebsocketConnection.Params()) {
-            it.fold(::handleFailure) { websocket ->
-                getPeerConnection(
-                    websocket,
-                    patient,
-                    getPeerConnectionObserver(websocket, patient),
-                    ::onGotWebsocketConnection
-                )
-            }
-        }
+    private fun onGotWebsocketConnectionSuccess(
+        websocket: Websocket,
+        user: User
+    ) {
+        getPeerConnection(
+            websocket,
+            user,
+            getPeerConnectionObserver(websocket, user),
+            ::onGotWebsocketConnectionSuccess
+        )
     }
 
-    private fun onGotWebsocketConnection(
+    private fun onGotWebsocketConnectionSuccess(
         peerConnection: PeerConnection,
         websocketConnection: Websocket,
         user: User
