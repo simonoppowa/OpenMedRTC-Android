@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.Observer
+import kotlinx.android.synthetic.main.activity_video.*
 import org.koin.android.ext.android.get
 import org.webrtc.EglBase
 import org.webrtc.MediaConstraints
@@ -30,6 +31,7 @@ class VideoActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video)
 
+        initVideoViews()
         // TODO
         when {
             intent.hasExtra(MEDICAL_KEY) -> {
@@ -45,6 +47,13 @@ class VideoActivity : BaseActivity() {
                 finish()
             }
         }
+    }
+
+    private fun initVideoViews() {
+        surface_view_local.init(rootEglBase.eglBaseContext, null)
+        surface_view_remote.init(rootEglBase.eglBaseContext, null)
+        surface_view_local.setZOrderMediaOverlay(true)
+        surface_view_remote.setZOrderMediaOverlay(true)
     }
 
     private fun intiPatientConnection(medical: Medical) {
