@@ -79,16 +79,16 @@ class JsonParser(private val gson: Gson) {
     fun parseDataMessage(jsonString: String): DataMessage? =
         parseJson(jsonString, DataMessage::class.java)
 
-    fun parseSdpMessage(jsonString: String): SdpMessage =
+    private fun parseSdpMessage(jsonString: String): SdpMessage =
         parseJson(jsonString, SdpMessage::class.java)
 
-    fun parseIceMessage(jsonString: String): IceMessage =
+    private fun parseIceMessage(jsonString: String): IceMessage =
         parseJson(jsonString, IceMessage::class.java)
 
-    fun parseSessionDescription(jsonString: String): SessionDescription =
+    private fun parseSessionDescription(jsonString: String): SessionDescription =
         parseJson(jsonString, SessionDescription::class.java)
 
-    fun parseIceCandidate(jsonString: String): IceCandidate =
+    private fun parseIceCandidate(jsonString: String): IceCandidate =
         parseJson(jsonString, IceCandidate::class.java)
 
     private fun sdpMessageToJson(sdpMessage: SdpMessage): String =
