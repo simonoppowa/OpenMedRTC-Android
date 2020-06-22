@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import org.webrtc.PeerConnection
 import org.webrtc.PeerConnectionFactory
+import software.openmedrtc.android.BuildConfig
 import software.openmedrtc.android.core.functional.Either
 import software.openmedrtc.android.core.functional.Failure
 import software.openmedrtc.android.core.interactor.UseCase
@@ -13,10 +14,9 @@ class GetPeerConnection(
     scope: CoroutineScope,
     dispatcher: CoroutineDispatcher
 ) : UseCase<PeerConnection, PeerConnectionObserver>(scope, dispatcher) {
-
-    // TODO
+    
     private val iceServers = listOf(
-        PeerConnection.IceServer.builder("stun:stun.l.google.com:19302")
+        PeerConnection.IceServer.builder(BuildConfig.STUN_SERVER)
             .createIceServer()
     )
 
