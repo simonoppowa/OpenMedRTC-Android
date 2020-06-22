@@ -38,6 +38,24 @@ class JsonParser(private val gson: Gson) {
         }
     }
 
+    fun createIceDataMessageJson(
+        fromUser: String,
+        toUser: String,
+        iceCandidate: IceCandidate,
+        messageType: String
+    ): Either<Failure.ParsingFailure, String> {
+        return try {
+            val iceJson = iceCandidateToJson(iceCandidate)
+            val iceMessage = IceMessage(fromUser, toUser, iceJson)
+            val iceMessageJson = iceMessageToJson(iceMessage)
+            val dataMessage = DataMessage(messageType, iceMessageJson)
+
+            Either.Right(dataMessageToJson(dataMessage))
+        } catch (t: Throwable) {
+            Either.Left(Failure.ParsingFailure)
+        }
+    }
+
     fun parseDataMessage(jsonString: String): DataMessage? =
         parseJson(jsonString, DataMessage::class.java)
 
@@ -59,13 +77,13 @@ class JsonParser(private val gson: Gson) {
     fun dataMessageToJson(dataMessage: DataMessage): String =
         toJson(dataMessage)
 
-    fun iceMessageToJson(iceMessage: IceMessage): String? =
+    fun iceMessageToJson(iceMessage: IceMessage): String =
         toJson(iceMessage)
 
     fun sessionDescriptionToJson(sessionDescription: SessionDescription): String =
         toJson(sessionDescription)
 
-    fun iceCandidateToJson(iceCandidate: IceCandidate): String? =
+    fun iceCandidateToJson(iceCandidate: IceCandidate): String =
         toJson(iceCandidate)
 
     private fun <T> parseJson(jsonString: String, classOfT: Class<T>): T =

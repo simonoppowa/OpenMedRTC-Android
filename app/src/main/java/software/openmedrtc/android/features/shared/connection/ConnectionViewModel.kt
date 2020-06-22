@@ -44,14 +44,14 @@ abstract class ConnectionViewModel(
                 if (p0 == null) return
                 super.onIceCandidate(p0)
 
-                val iceJson = jsonParser.iceCandidateToJson(p0) ?: return
-                val iceMessage = IceMessage(USERNAME, user.email, iceJson)
-                val iceMessageJson = jsonParser.iceMessageToJson(iceMessage) ?: return
-
-                val dataMessage = DataMessage(DataMessage.MESSAGE_TYPE_ICE_CANDIDATE, iceMessageJson)
-
-                val dataMessageJson = jsonParser.dataMessageToJson(dataMessage) ?: return
-                websocket.sendMessage(dataMessageJson)
+                jsonParser.createIceDataMessageJson(
+                    USERNAME,
+                    user.email,
+                    p0,
+                    DataMessage.MESSAGE_TYPE_ICE_CANDIDATE
+                ).fold(::handleFailure) { dataMessageJson ->
+                    websocket.sendMessage(dataMessageJson)
+                }
             }
 
             override fun onIceConnectionChange(p0: PeerConnection.IceConnectionState?) {
