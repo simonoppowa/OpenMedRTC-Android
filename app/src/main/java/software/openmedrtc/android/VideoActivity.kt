@@ -10,6 +10,7 @@ import org.webrtc.EglBase
 import org.webrtc.MediaConstraints
 import org.webrtc.PeerConnection
 import org.webrtc.SurfaceTextureHelper
+import software.openmedrtc.android.core.helper.FrontVideoCapturer
 import software.openmedrtc.android.core.platform.BaseActivity
 import software.openmedrtc.android.features.shared.Medical
 import software.openmedrtc.android.features.shared.Patient
@@ -23,6 +24,8 @@ class VideoActivity : BaseActivity() {
     private val rootEglBase: EglBase = get()
     private val mediaConstraints: MediaConstraints = get()
     private val surfaceTextureHelper: SurfaceTextureHelper = get()
+    private val frontVideoCapturer: FrontVideoCapturer = get()
+
 
     private val medicalConnectionViewModel: MedicalConnectionViewModel = get()
     private val patientConnectionViewModel: PatientConnectionViewModel = get()
@@ -74,19 +77,61 @@ class VideoActivity : BaseActivity() {
                 initVideoCapture(peerConnection)
             }
         )
+        patientConnectionViewModel.remoteMediaStream.observe(
+            this,
+            Observer { mediaStream ->
+                mediaStream.videoTracks[0].addSink(surface_view_remote)
+            }
+        )
+        patientConnectionViewModel.connectionReady.observe(
+            this,
+            Observer {
+                if(it == true) view_switcher.showNext()
+            }
+        )
     }
 
     private fun observeMedicalConnection() {
         medicalConnectionViewModel.peerConnection.observe(
             this,
             Observer { peerConnection ->
-                initVideoCapture(peerConnection)
+                // initVideoCapture(peerConnection)
             }
         )
     }
 
     private fun initVideoCapture(peerConnection: PeerConnection) {
-        // TODO
+        val videoCapturerAndroid = frontVideoCapturer.createCameraCapturer() ?: return // TODO
+
+        val videoSource =
+            patientConnectionViewModel.peerConnectionFactory
+                .createVideoSource(videoCapturerAndroid.isScreencast)
+        videoCapturerAndroid.initialize(
+            surfaceTextureHelper,
+            this,
+            videoSource.capturerObserver
+        )
+        val localVideoTrack =
+            patientConnectionViewModel.peerConnectionFactory
+                .createVideoTrack("100", videoSource)
+
+        val audioSource = patientConnectionViewModel.peerConnectionFactory
+            .createAudioSource(mediaConstraints)
+        val localAudioTrack = patientConnectionViewModel.peerConnectionFactory
+            .createAudioTrack("101", audioSource)
+
+        val stream = patientConnectionViewModel.peerConnectionFactory
+            .createLocalMediaStream("102")
+        stream.addTrack(localAudioTrack)
+        stream.addTrack(localVideoTrack)
+        peerConnection.addStream(stream)
+
+        videoCapturerAndroid.startCapture(1024, 720, 30) // TODO
+
+        localVideoTrack.addSink(surface_view_local)
+
+        surface_view_local.setMirror(true)
+        surface_view_remote.setMirror(true)
     }
 
     companion object {

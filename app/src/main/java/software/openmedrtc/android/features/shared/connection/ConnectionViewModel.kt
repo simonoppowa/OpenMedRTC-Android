@@ -1,10 +1,10 @@
 package software.openmedrtc.android.features.shared.connection
 
 import androidx.lifecycle.MutableLiveData
-import org.webrtc.IceCandidate
-import org.webrtc.MediaStream
-import org.webrtc.PeerConnection
-import org.webrtc.SessionDescription
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.webrtc.*
 import software.openmedrtc.android.core.di.USERNAME
 import software.openmedrtc.android.core.helper.JsonParser
 import software.openmedrtc.android.core.platform.BaseViewModel
@@ -21,7 +21,9 @@ abstract class ConnectionViewModel(
     private val getPeerConnection: GetPeerConnection,
     private val getSessionDescription: GetSessionDescription,
     private val setSessionDescription: SetSessionDescription,
-    private val jsonParser: JsonParser
+    private val jsonParser: JsonParser,
+    private val coroutineScope: CoroutineScope,
+    val peerConnectionFactory: PeerConnectionFactory
 ) : BaseViewModel() {
 
     val remoteMediaStream: MutableLiveData<MediaStream> = MutableLiveData()
@@ -36,6 +38,7 @@ abstract class ConnectionViewModel(
     ) = getPeerConnection(peerConnectionObserver)
     {
         it.fold(::handleFailure) { peerConnection ->
+            this.peerConnection.postValue(peerConnection)
             onSuccess(peerConnection, websocket, user)
         }
     }
@@ -61,6 +64,9 @@ abstract class ConnectionViewModel(
 
             override fun onIceConnectionChange(p0: PeerConnection.IceConnectionState?) {
                 super.onIceConnectionChange(p0)
+                if(p0 == PeerConnection.IceConnectionState.CONNECTED) {
+                    connectionReady.postValue(true)
+                }
             }
 
             override fun onAddStream(p0: MediaStream?) {

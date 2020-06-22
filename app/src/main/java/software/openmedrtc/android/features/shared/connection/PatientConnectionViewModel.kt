@@ -1,8 +1,10 @@
 package software.openmedrtc.android.features.shared.connection
 
 
+import kotlinx.coroutines.CoroutineScope
 import okhttp3.Response
 import org.webrtc.PeerConnection
+import org.webrtc.PeerConnectionFactory
 import org.webrtc.SessionDescription
 import software.openmedrtc.android.core.helper.JsonParser
 import software.openmedrtc.android.features.shared.Medical
@@ -18,6 +20,8 @@ class PatientConnectionViewModel(
     getPeerConnection: GetPeerConnection,
     getSessionDescription: GetSessionDescription,
     setSessionDescription: SetSessionDescription,
+    peerConnectionFactory: PeerConnectionFactory,
+    coroutineScope: CoroutineScope,
     private val getWebsocketConnection: GetWebsocketConnection,
     private val jsonParser: JsonParser
 ) :
@@ -25,7 +29,9 @@ class PatientConnectionViewModel(
         getPeerConnection,
         getSessionDescription,
         setSessionDescription,
-        jsonParser
+        jsonParser,
+        coroutineScope,
+        peerConnectionFactory
     ) {
 
     fun initMedicalConnection(medical: Medical) {

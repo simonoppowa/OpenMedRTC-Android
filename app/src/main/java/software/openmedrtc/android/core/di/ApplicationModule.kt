@@ -14,6 +14,7 @@ import org.webrtc.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import software.openmedrtc.android.BuildConfig
+import software.openmedrtc.android.core.helper.FrontVideoCapturer
 import software.openmedrtc.android.core.helper.JsonParser
 import software.openmedrtc.android.features.medical.MedicalViewModel
 import software.openmedrtc.android.features.medical.PatientAdapter
@@ -77,6 +78,11 @@ val applicationModule = module(override = true) {
         getSurfaceTextureHelper(get())
     }
 
+    // Camera
+    single {
+        FrontVideoCapturer()
+    }
+
     // Coroutines
     factory { CoroutineScope(Dispatchers.IO + Job()) }
     factory { Dispatchers.Main as CoroutineDispatcher }
@@ -131,11 +137,11 @@ val applicationModule = module(override = true) {
     }
 
     viewModel {
-        PatientConnectionViewModel(get(), get(), get(), get(), get())
+        PatientConnectionViewModel(get(), get(), get(), get(), get(), get(), get())
     }
 
     viewModel {
-        MedicalConnectionViewModel(get(), get(), get(), get(), get())
+        MedicalConnectionViewModel(get(), get(), get(), get(), get(), get(), get())
     }
 
     // Adapters
