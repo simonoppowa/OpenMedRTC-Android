@@ -13,6 +13,8 @@ import software.openmedrtc.android.features.shared.connection.sdp.SdpType
 import software.openmedrtc.android.features.shared.connection.sdp.SessionType
 import software.openmedrtc.android.features.shared.connection.sdp.SetSessionDescription
 import timber.log.Timber
+import java.lang.ClassCastException
+import java.lang.Exception
 
 abstract class ConnectionViewModel(
     private val getPeerConnection: GetPeerConnection,
@@ -29,9 +31,6 @@ abstract class ConnectionViewModel(
     ) = getPeerConnection(peerConnectionObserver)
     {
         it.fold(::handleFailure) { peerConnection ->
-
-            //handleWebSocketConnection(websocket, peerConnection)
-            //createSessionDescription(peerConnection, websocket, user)
             onSuccess(peerConnection, websocket, user)
         }
     }
@@ -76,12 +75,6 @@ abstract class ConnectionViewModel(
         ) {
             it.fold(::handleFailure) { sessionDescription ->
                 onSuccess(peerConnection, websocketConnection, sessionDescription, user)
-//                setLocalSessionDescription(
-//                    peerConnection,
-//                    websocketConnection,
-//                    sessionDescription,
-//                    user
-//                )
             }
         }
     }
@@ -109,7 +102,6 @@ abstract class ConnectionViewModel(
                         user
                     )
                 }
-                //sendSdpOffer(sessionDescription, user, peerConnection, websocketConnection)
             }
         }
     }
@@ -149,26 +141,18 @@ abstract class ConnectionViewModel(
         websocketConnection: Websocket,
         sdpType: SdpType
     ) {
-        // TODO handle exception
         val dataMessageType = if (sdpType == SdpType.OFFER) {
             DataMessage.MESSAGE_TYPE_SDP_OFFER
         } else {
             DataMessage.MESSAGE_TYPE_SDP_ANSWER
         }
-
-        val sdpMessage = SdpMessage(
+        jsonParser.createSdpDataMessageJson(
             USERNAME,
             user.email,
-            jsonParser.sessionDescriptionToJson(sessionDescription) ?: return
-        )
-
-        val dataMessage =
-            DataMessage(
-                dataMessageType,
-                jsonParser.sdpMessageToJson(sdpMessage) ?: return
-            )
-        val dataMessageJson = jsonParser.dataMessageToJson(dataMessage) ?: return
-
-        websocketConnection.sendMessage(dataMessageJson)
+            sessionDescription,
+            dataMessageType
+        ).fold(::handleFailure) { dataMessageJson ->
+            websocketConnection.sendMessage(dataMessageJson)
+        }
     }
 }

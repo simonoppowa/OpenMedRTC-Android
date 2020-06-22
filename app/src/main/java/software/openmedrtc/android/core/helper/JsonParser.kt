@@ -4,6 +4,9 @@ import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import org.webrtc.IceCandidate
 import org.webrtc.SessionDescription
+import software.openmedrtc.android.core.di.USERNAME
+import software.openmedrtc.android.core.functional.Either
+import software.openmedrtc.android.core.functional.Failure
 import software.openmedrtc.android.features.shared.connection.DataMessage
 import software.openmedrtc.android.features.shared.connection.IceMessage
 import software.openmedrtc.android.features.shared.connection.SdpMessage
@@ -11,6 +14,29 @@ import timber.log.Timber
 import java.lang.ClassCastException
 
 class JsonParser(private val gson: Gson) {
+
+    fun createSdpDataMessageJson(
+        fromUser: String,
+        toUser: String,
+        sessionDescription: SessionDescription,
+        messageType: String
+    ): Either<Failure.ParsingFailure, String> {
+        return try {
+            val sdpMessage = SdpMessage(
+                fromUser,
+                toUser,
+                sessionDescriptionToJson(sessionDescription)
+            )
+            val dataMessage =
+                DataMessage(
+                    messageType,
+                    sdpMessageToJson(sdpMessage)
+                )
+            return Either.Right(dataMessageToJson(dataMessage))
+        } catch (t: Throwable) {
+            Either.Left(Failure.ParsingFailure)
+        }
+    }
 
     fun parseDataMessage(jsonString: String): DataMessage? =
         parseJson(jsonString, DataMessage::class.java)
@@ -27,36 +53,24 @@ class JsonParser(private val gson: Gson) {
     fun parseIceCandidate(jsonString: String): IceCandidate? =
         parseJson(jsonString, IceCandidate::class.java)
 
-    fun sdpMessageToJson(sdpMessage: SdpMessage): String? =
+    fun sdpMessageToJson(sdpMessage: SdpMessage): String =
         toJson(sdpMessage)
 
-    fun dataMessageToJson(dataMessage: DataMessage): String? =
+    fun dataMessageToJson(dataMessage: DataMessage): String =
         toJson(dataMessage)
 
     fun iceMessageToJson(iceMessage: IceMessage): String? =
         toJson(iceMessage)
 
-    fun sessionDescriptionToJson(sessionDescription: SessionDescription): String? =
+    fun sessionDescriptionToJson(sessionDescription: SessionDescription): String =
         toJson(sessionDescription)
 
     fun iceCandidateToJson(iceCandidate: IceCandidate): String? =
         toJson(iceCandidate)
 
-    private fun <T> parseJson(jsonString: String, classOfT : Class<T>): T? {
-        return try {
-            gson.fromJson(jsonString, classOfT)
-        } catch (jsonSyntaxException : JsonSyntaxException) {
-            Timber.e("Failed parsing Json: $jsonSyntaxException")
-            null
-        }
-    }
+    private fun <T> parseJson(jsonString: String, classOfT: Class<T>): T =
+        gson.fromJson(jsonString, classOfT) ?: throw JsonSyntaxException("Wrong syntax")
 
-    private fun toJson(src: Any): String? {
-        return try {
-            gson.toJson(src, src::class.java)
-        } catch (classCastException: ClassCastException) {
-            Timber.e("Failed creating json: $classCastException")
-            null
-        }
-    }
+    private fun toJson(src: Any): String =
+        gson.toJson(src, src::class.java) ?: throw ClassCastException("Wrong syntax")
 }
