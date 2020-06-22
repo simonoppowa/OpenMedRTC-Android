@@ -10,10 +10,7 @@ import okhttp3.*
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
-import org.webrtc.DefaultVideoDecoderFactory
-import org.webrtc.DefaultVideoEncoderFactory
-import org.webrtc.EglBase
-import org.webrtc.PeerConnectionFactory
+import org.webrtc.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import software.openmedrtc.android.BuildConfig
@@ -69,6 +66,15 @@ val applicationModule = module(override = true) {
 
     single {
         createPeerConnectionFactory(androidApplication(), get())
+    }
+
+    // View
+    single {
+        MediaConstraints()
+    }
+
+    single {
+        getSurfaceTextureHelper(get())
     }
 
     // Coroutines
@@ -191,3 +197,6 @@ private fun getVideoEncoderFactory(rootEglBase: EglBase) = DefaultVideoEncoderFa
 
 private fun getVideoDecoderFactory(rootEglBase: EglBase) =
     DefaultVideoDecoderFactory(rootEglBase.eglBaseContext)
+
+private fun getSurfaceTextureHelper(eglBase: EglBase) =
+    SurfaceTextureHelper.create("CaptureThread", eglBase.eglBaseContext)

@@ -3,7 +3,12 @@ package software.openmedrtc.android
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.lifecycle.Observer
 import org.koin.android.ext.android.get
+import org.webrtc.EglBase
+import org.webrtc.MediaConstraints
+import org.webrtc.PeerConnection
+import org.webrtc.SurfaceTextureHelper
 import software.openmedrtc.android.core.platform.BaseActivity
 import software.openmedrtc.android.features.shared.Medical
 import software.openmedrtc.android.features.shared.Patient
@@ -12,7 +17,11 @@ import software.openmedrtc.android.features.shared.connection.MedicalConnectionV
 import software.openmedrtc.android.features.shared.connection.PatientConnectionViewModel
 import timber.log.Timber
 
-class VideoActivity() : BaseActivity() {
+class VideoActivity : BaseActivity() {
+
+    private val rootEglBase: EglBase = get()
+    private val mediaConstraints: MediaConstraints = get()
+    private val surfaceTextureHelper: SurfaceTextureHelper = get()
 
     private val medicalConnectionViewModel: MedicalConnectionViewModel = get()
     private val patientConnectionViewModel: PatientConnectionViewModel = get()
@@ -40,12 +49,36 @@ class VideoActivity() : BaseActivity() {
 
     private fun intiPatientConnection(medical: Medical) {
         patientConnectionViewModel.initMedicalConnection(medical)
+        observePatientConnection()
     }
 
     private fun initMedicalConnection(patient: Patient) {
         medicalConnectionViewModel.initPatientConnection(patient)
+        observeMedicalConnection()
     }
 
+    // TODO duplicate code
+    private fun observePatientConnection() {
+        patientConnectionViewModel.peerConnection.observe(
+            this,
+            Observer { peerConnection ->
+                initVideoCapture(peerConnection)
+            }
+        )
+    }
+
+    private fun observeMedicalConnection() {
+        medicalConnectionViewModel.peerConnection.observe(
+            this,
+            Observer { peerConnection ->
+                initVideoCapture(peerConnection)
+            }
+        )
+    }
+
+    private fun initVideoCapture(peerConnection: PeerConnection) {
+        // TODO
+    }
 
     companion object {
         private const val PATIENT_KEY = "patient"

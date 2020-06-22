@@ -1,5 +1,6 @@
 package software.openmedrtc.android.features.shared.connection
 
+import androidx.lifecycle.MutableLiveData
 import org.webrtc.IceCandidate
 import org.webrtc.MediaStream
 import org.webrtc.PeerConnection
@@ -22,6 +23,10 @@ abstract class ConnectionViewModel(
     private val setSessionDescription: SetSessionDescription,
     private val jsonParser: JsonParser
 ) : BaseViewModel() {
+
+    val remoteMediaStream: MutableLiveData<MediaStream> = MutableLiveData()
+    val connectionReady: MutableLiveData<Boolean> = MutableLiveData()
+    val peerConnection: MutableLiveData<PeerConnection> = MutableLiveData()
 
     open fun getPeerConnection(
         websocket: Websocket,
