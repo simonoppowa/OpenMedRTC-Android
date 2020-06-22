@@ -56,34 +56,54 @@ class JsonParser(private val gson: Gson) {
         }
     }
 
+    fun getSessionDescriptionFromDataMessage(dataMessage: DataMessage)
+            : Either<Failure.ParsingFailure, SessionDescription> {
+        return try {
+            val sdpMessage = parseSdpMessage(dataMessage.json)
+
+            Either.Right(parseSessionDescription(sdpMessage.sessionDescriptionString))
+        } catch (t: Throwable) {
+            Either.Left(Failure.ParsingFailure)
+        }
+    }
+
+    fun getIceCandidateFromDataMessage(dataMessage: DataMessage): Either<Failure.ParsingFailure, IceCandidate> {
+        return try {
+            val iceMessage = parseIceMessage(dataMessage.json)
+            Either.Right(parseIceCandidate(iceMessage.iceCandidate))
+        } catch (t: Throwable) {
+            Either.Left(Failure.ParsingFailure)
+        }
+    }
+
     fun parseDataMessage(jsonString: String): DataMessage? =
         parseJson(jsonString, DataMessage::class.java)
 
-    fun parseSdpMessage(jsonString: String): SdpMessage? =
+    fun parseSdpMessage(jsonString: String): SdpMessage =
         parseJson(jsonString, SdpMessage::class.java)
 
-    fun parseIceMessage(jsonString: String): IceMessage? =
+    fun parseIceMessage(jsonString: String): IceMessage =
         parseJson(jsonString, IceMessage::class.java)
 
-    fun parseSessionDescription(jsonString: String): SessionDescription? =
+    fun parseSessionDescription(jsonString: String): SessionDescription =
         parseJson(jsonString, SessionDescription::class.java)
 
-    fun parseIceCandidate(jsonString: String): IceCandidate? =
+    fun parseIceCandidate(jsonString: String): IceCandidate =
         parseJson(jsonString, IceCandidate::class.java)
 
-    fun sdpMessageToJson(sdpMessage: SdpMessage): String =
+    private fun sdpMessageToJson(sdpMessage: SdpMessage): String =
         toJson(sdpMessage)
 
-    fun dataMessageToJson(dataMessage: DataMessage): String =
+    private fun dataMessageToJson(dataMessage: DataMessage): String =
         toJson(dataMessage)
 
-    fun iceMessageToJson(iceMessage: IceMessage): String =
+    private fun iceMessageToJson(iceMessage: IceMessage): String =
         toJson(iceMessage)
 
-    fun sessionDescriptionToJson(sessionDescription: SessionDescription): String =
+    private fun sessionDescriptionToJson(sessionDescription: SessionDescription): String =
         toJson(sessionDescription)
 
-    fun iceCandidateToJson(iceCandidate: IceCandidate): String =
+    private fun iceCandidateToJson(iceCandidate: IceCandidate): String =
         toJson(iceCandidate)
 
     private fun <T> parseJson(jsonString: String, classOfT: Class<T>): T =

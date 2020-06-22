@@ -97,25 +97,29 @@ class MedicalConnectionViewModel(
                 when (dataMessage?.messageType) {
                     MESSAGE_TYPE_SDP_ANSWER -> {
                         Timber.d("Sdp answer received")
-                        val sdpMessage = jsonParser.parseSdpMessage(dataMessage.json) ?: return
 
-                        val sessionDescription =
-                            jsonParser.parseSessionDescription(sdpMessage.sessionDescriptionString)
-                                ?: return
-                        setRemoteSessionDescription(peerConnection, websocket, sessionDescription, user)
+                        jsonParser.getSessionDescriptionFromDataMessage(dataMessage)
+                            .fold(::handleFailure) { sessionDescription ->
+                                setRemoteSessionDescription(
+                                    peerConnection,
+                                    websocket,
+                                    sessionDescription,
+                                    user
+                                )
+                            }
                     }
                     MESSAGE_TYPE_ICE_CANDIDATE -> {
                         Timber.d("Ice candidate received")
-                        val iceMessage = jsonParser.parseIceMessage(dataMessage.json) ?: return
-                        val iceCandidate =
-                            jsonParser.parseIceCandidate(iceMessage.iceCandidate) ?: return
-                        setIceCandidate(iceCandidate, peerConnection)
+
+                        jsonParser.getIceCandidateFromDataMessage(dataMessage)
+                            .fold(::handleFailure) { iceCandidate ->
+                                setIceCandidate(iceCandidate, peerConnection)
+                            }
                     }
                     else -> Timber.e("Wrong data message type")
                 }
 
             }
-
         })
     }
 }
