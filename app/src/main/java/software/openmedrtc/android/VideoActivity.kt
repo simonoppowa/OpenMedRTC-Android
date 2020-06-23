@@ -10,6 +10,7 @@ import org.webrtc.EglBase
 import org.webrtc.MediaConstraints
 import org.webrtc.PeerConnection
 import org.webrtc.SurfaceTextureHelper
+import software.openmedrtc.android.core.functional.Failure
 import software.openmedrtc.android.core.helper.FrontVideoCapturer
 import software.openmedrtc.android.core.platform.BaseActivity
 import software.openmedrtc.android.features.shared.Medical
@@ -86,7 +87,12 @@ class VideoActivity : BaseActivity() {
     }
 
     private fun initVideoCapture(peerConnection: PeerConnection) {
-        val videoCapturerAndroid = frontVideoCapturer.createCameraCapturer() ?: return // TODO
+        val videoCapturerAndroid = frontVideoCapturer.createCameraCapturer()
+
+        if(videoCapturerAndroid == null) {
+            finishWithFailure(Failure.CameraFailure)
+            return
+        }
 
         val videoSource =
             connectionViewModel.peerConnectionFactory
