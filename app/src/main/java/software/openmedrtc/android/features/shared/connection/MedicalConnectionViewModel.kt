@@ -46,11 +46,11 @@ class MedicalConnectionViewModel(
             websocket,
             user,
             getPeerConnectionObserver(websocket, user),
-            ::onGotWebsocketConnectionSuccess
+            ::onGotPeerConnectionSuccess
         )
     }
 
-    private fun onGotWebsocketConnectionSuccess(
+    private fun onGotPeerConnectionSuccess(
         peerConnection: PeerConnection,
         websocketConnection: Websocket,
         user: User
