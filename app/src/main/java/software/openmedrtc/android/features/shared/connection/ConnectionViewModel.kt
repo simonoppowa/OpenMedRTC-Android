@@ -82,6 +82,7 @@ abstract class ConnectionViewModel(
 
             override fun onAddStream(p0: MediaStream?) {
                 super.onAddStream(p0)
+                remoteMediaStream.postValue(p0)
             }
         }
 
