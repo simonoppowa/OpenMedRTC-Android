@@ -2,6 +2,8 @@ package software.openmedrtc.android.features.shared.connection
 
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.webrtc.*
 import software.openmedrtc.android.core.di.USERNAME
 import software.openmedrtc.android.core.helper.JsonParser
@@ -49,8 +51,11 @@ abstract class ConnectionViewModel(
     ) = getPeerConnection(peerConnectionObserver)
     {
         it.fold(::handleFailure) { peerConnection ->
-            this.peerConnection.postValue(peerConnection)
-            onSuccess(peerConnection, websocket, user)
+            // TODO BUG Should be postValue, but does not trigger observer
+            coroutineScope.launch(Dispatchers.Main) {
+                this@ConnectionViewModel.peerConnection.value = peerConnection
+                onSuccess(peerConnection, websocket, user)
+            }
         }
     }
 
