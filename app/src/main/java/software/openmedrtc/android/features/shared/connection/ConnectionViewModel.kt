@@ -1,9 +1,10 @@
 package software.openmedrtc.android.features.shared.connection
 
-import org.webrtc.IceCandidate
-import org.webrtc.MediaStream
-import org.webrtc.PeerConnection
-import org.webrtc.SessionDescription
+import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.webrtc.*
 import software.openmedrtc.android.core.di.USERNAME
 import software.openmedrtc.android.core.helper.JsonParser
 import software.openmedrtc.android.core.platform.BaseViewModel
@@ -13,25 +14,48 @@ import software.openmedrtc.android.features.shared.connection.sdp.SdpType
 import software.openmedrtc.android.features.shared.connection.sdp.SessionType
 import software.openmedrtc.android.features.shared.connection.sdp.SetSessionDescription
 import timber.log.Timber
-import java.lang.ClassCastException
-import java.lang.Exception
 
 abstract class ConnectionViewModel(
+    private val getWebsocketConnection: GetWebsocketConnection,
     private val getPeerConnection: GetPeerConnection,
     private val getSessionDescription: GetSessionDescription,
     private val setSessionDescription: SetSessionDescription,
-    private val jsonParser: JsonParser
+    private val jsonParser: JsonParser,
+    private val coroutineScope: CoroutineScope,
+    val peerConnectionFactory: PeerConnectionFactory
 ) : BaseViewModel() {
+
+    val remoteMediaStream: MutableLiveData<MediaStream> = MutableLiveData()
+    val iceConnectionState: MutableLiveData<PeerConnection.IceConnectionState> = MutableLiveData()
+    val peerConnection: MutableLiveData<PeerConnection> = MutableLiveData()
+
+    abstract fun initConnection(user: User)
+
+    open fun getWebsocketConnection(
+        user: User,
+        params: GetWebsocketConnection.Params,
+        onSuccess: (Websocket, User) -> Unit
+    ){
+        return getWebsocketConnection(params) {
+            it.fold(::handleFailure) { websocket ->
+                onSuccess(websocket, user)
+            }
+        }
+    }
 
     open fun getPeerConnection(
         websocket: Websocket,
         user: User,
         peerConnectionObserver: PeerConnectionObserver,
-        onSuccess: (PeerConnection, Websocket, user : User) -> Unit
+        onSuccess: (PeerConnection, Websocket, User) -> Unit
     ) = getPeerConnection(peerConnectionObserver)
     {
         it.fold(::handleFailure) { peerConnection ->
-            onSuccess(peerConnection, websocket, user)
+            // TODO BUG Should be postValue, but does not trigger observer
+            coroutineScope.launch(Dispatchers.Main) {
+                this@ConnectionViewModel.peerConnection.value = peerConnection
+                onSuccess(peerConnection, websocket, user)
+            }
         }
     }
 
@@ -56,10 +80,17 @@ abstract class ConnectionViewModel(
 
             override fun onIceConnectionChange(p0: PeerConnection.IceConnectionState?) {
                 super.onIceConnectionChange(p0)
+                when (p0) {
+                    PeerConnection.IceConnectionState.CONNECTED,
+                    PeerConnection.IceConnectionState.FAILED,
+                    PeerConnection.IceConnectionState.DISCONNECTED
+                        -> iceConnectionState.postValue(p0)
+                }
             }
 
             override fun onAddStream(p0: MediaStream?) {
                 super.onAddStream(p0)
+                if(p0 != null) remoteMediaStream.postValue(p0)
             }
         }
 
