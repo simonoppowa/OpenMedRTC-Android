@@ -26,7 +26,7 @@ abstract class ConnectionViewModel(
 ) : BaseViewModel() {
 
     val remoteMediaStream: MutableLiveData<MediaStream> = MutableLiveData()
-    val connectionReady: MutableLiveData<Boolean> = MutableLiveData()
+    val iceConnectionState: MutableLiveData<PeerConnection.IceConnectionState> = MutableLiveData()
     val peerConnection: MutableLiveData<PeerConnection> = MutableLiveData()
 
     abstract fun initConnection(user: User)
@@ -80,14 +80,17 @@ abstract class ConnectionViewModel(
 
             override fun onIceConnectionChange(p0: PeerConnection.IceConnectionState?) {
                 super.onIceConnectionChange(p0)
-                if(p0 == PeerConnection.IceConnectionState.CONNECTED) {
-                    connectionReady.postValue(true)
+                when (p0) {
+                    PeerConnection.IceConnectionState.CONNECTED,
+                    PeerConnection.IceConnectionState.FAILED,
+                    PeerConnection.IceConnectionState.DISCONNECTED
+                        -> iceConnectionState.postValue(p0)
                 }
             }
 
             override fun onAddStream(p0: MediaStream?) {
                 super.onAddStream(p0)
-                remoteMediaStream.postValue(p0)
+                if(p0 != null) remoteMediaStream.postValue(p0)
             }
         }
 

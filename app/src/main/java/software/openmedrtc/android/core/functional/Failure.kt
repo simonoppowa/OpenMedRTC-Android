@@ -27,6 +27,7 @@ sealed class Failure {
     object SdpFailure : Failure()
     object ParsingFailure: Failure()
     object CameraFailure: Failure()
+    object IceFailure: Failure()
 
     /** * Extend this class for feature specific failures.*/
     abstract class FeatureFailure: Failure()

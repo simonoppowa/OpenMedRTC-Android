@@ -78,10 +78,14 @@ class VideoActivity : BaseActivity() {
                 mediaStream.videoTracks[0].addSink(surface_view_remote)
             }
         )
-        connectionViewModel.connectionReady.observe(
+        connectionViewModel.iceConnectionState.observe(
             this,
-            Observer {
-                if(it == true) view_switcher.showNext()
+            Observer { connectionState ->
+                when (connectionState) {
+                    PeerConnection.IceConnectionState.CONNECTED -> view_switcher.showNext()
+                    PeerConnection.IceConnectionState.FAILED -> finishWithFailure(Failure.IceFailure)
+                    PeerConnection.IceConnectionState.DISCONNECTED -> finish()
+                }
             }
         )
     }
