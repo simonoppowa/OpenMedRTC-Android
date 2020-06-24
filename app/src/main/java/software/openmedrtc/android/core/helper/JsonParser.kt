@@ -4,13 +4,11 @@ import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import org.webrtc.IceCandidate
 import org.webrtc.SessionDescription
-import software.openmedrtc.android.core.di.USERNAME
 import software.openmedrtc.android.core.functional.Either
 import software.openmedrtc.android.core.functional.Failure
-import software.openmedrtc.android.features.shared.connection.DataMessage
-import software.openmedrtc.android.features.shared.connection.IceMessage
-import software.openmedrtc.android.features.shared.connection.SdpMessage
-import timber.log.Timber
+import software.openmedrtc.android.features.connection.websocket.DataMessage
+import software.openmedrtc.android.features.connection.websocket.IceMessage
+import software.openmedrtc.android.features.connection.websocket.SdpMessage
 import java.lang.ClassCastException
 
 class JsonParser(private val gson: Gson) {
@@ -22,11 +20,12 @@ class JsonParser(private val gson: Gson) {
         messageType: String
     ): Either<Failure.ParsingFailure, String> {
         return try {
-            val sdpMessage = SdpMessage(
-                fromUser,
-                toUser,
-                sessionDescriptionToJson(sessionDescription)
-            )
+            val sdpMessage =
+                SdpMessage(
+                    fromUser,
+                    toUser,
+                    sessionDescriptionToJson(sessionDescription)
+                )
             val dataMessage =
                 DataMessage(
                     messageType,
@@ -46,9 +45,18 @@ class JsonParser(private val gson: Gson) {
     ): Either<Failure.ParsingFailure, String> {
         return try {
             val iceJson = iceCandidateToJson(iceCandidate)
-            val iceMessage = IceMessage(fromUser, toUser, iceJson)
+            val iceMessage =
+                IceMessage(
+                    fromUser,
+                    toUser,
+                    iceJson
+                )
             val iceMessageJson = iceMessageToJson(iceMessage)
-            val dataMessage = DataMessage(messageType, iceMessageJson)
+            val dataMessage =
+                DataMessage(
+                    messageType,
+                    iceMessageJson
+                )
 
             Either.Right(dataMessageToJson(dataMessage))
         } catch (t: Throwable) {
