@@ -4,19 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.fragment_patient_main.*
+import kotlinx.android.synthetic.main.fragment_patient_dashboard.*
 import software.openmedrtc.android.R
 import software.openmedrtc.android.core.platform.BaseFragment
 import software.openmedrtc.android.features.dashboard.patient.MedicalsListFragment
 
-class MedicalMainFragment : BaseFragment() {
+class MedicalDashboardFragment : BaseFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_medical_main, container, false)
+        return inflater.inflate(R.layout.fragment_medical_dashboard, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -49,6 +49,6 @@ class MedicalMainFragment : BaseFragment() {
 
         @JvmStatic
         fun newInstance() =
-            MedicalMainFragment()
+            MedicalDashboardFragment()
     }
 }

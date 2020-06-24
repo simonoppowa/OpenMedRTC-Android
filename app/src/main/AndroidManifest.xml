@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".features.dashboard.MainActivity" />
+        <activity android:name=".features.dashboard.DashboardActivity" />
 
         <activity android:name=".features.video.VideoActivity" />
     </application>
