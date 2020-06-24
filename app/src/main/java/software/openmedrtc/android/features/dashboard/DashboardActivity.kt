@@ -1,6 +1,8 @@
 package software.openmedrtc.android.features.dashboard
 
 import android.Manifest
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
@@ -79,5 +81,8 @@ class DashboardActivity : BaseActivity() {
     companion object {
         private const val ALL_PERMISSIONS_CODE = 1
         private const val PERMISSION_GRANTED_CODE = PackageManager.PERMISSION_GRANTED
+
+        fun getIntent(context: Context) =
+            Intent(context, DashboardActivity::class.java)
     }
 }
