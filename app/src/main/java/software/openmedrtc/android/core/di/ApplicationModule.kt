@@ -16,17 +16,20 @@ import retrofit2.converter.gson.GsonConverterFactory
 import software.openmedrtc.android.BuildConfig
 import software.openmedrtc.android.core.helper.FrontVideoCapturer
 import software.openmedrtc.android.core.helper.JsonParser
-import software.openmedrtc.android.features.medical.MedicalViewModel
-import software.openmedrtc.android.features.medical.PatientAdapter
-import software.openmedrtc.android.features.patient.GetMedicals
-import software.openmedrtc.android.features.patient.MedicalsAdapter
-import software.openmedrtc.android.features.patient.PatientViewModel
-import software.openmedrtc.android.features.shared.UserRepository
-import software.openmedrtc.android.features.shared.UserService
-import software.openmedrtc.android.features.shared.connection.*
-import software.openmedrtc.android.features.shared.connection.sdp.GetSessionDescription
-import software.openmedrtc.android.features.shared.connection.sdp.SessionDescriptionRepository
-import software.openmedrtc.android.features.shared.connection.sdp.SetSessionDescription
+import software.openmedrtc.android.features.dashboard.medical.MedicalViewModel
+import software.openmedrtc.android.features.connection.websocket.PatientAdapter
+import software.openmedrtc.android.features.connection.rest.GetMedicals
+import software.openmedrtc.android.features.connection.rest.MedicalsAdapter
+import software.openmedrtc.android.features.dashboard.patient.PatientViewModel
+import software.openmedrtc.android.features.connection.rest.UserRepository
+import software.openmedrtc.android.features.connection.rest.UserService
+import software.openmedrtc.android.features.connection.*
+import software.openmedrtc.android.features.connection.peerconnection.GetPeerConnection
+import software.openmedrtc.android.features.connection.sdp.GetSessionDescription
+import software.openmedrtc.android.features.connection.sdp.SessionDescriptionRepository
+import software.openmedrtc.android.features.connection.sdp.SetSessionDescription
+import software.openmedrtc.android.features.connection.websocket.GetWebsocketConnection
+import software.openmedrtc.android.features.connection.websocket.WebsocketRepository
 import java.io.IOException
 
 // TODO remove mocked data
@@ -108,15 +111,27 @@ val applicationModule = module(override = true) {
 
     // UseCases
     factory {
-        GetMedicals(get(), get(), get())
+        GetMedicals(
+            get(),
+            get(),
+            get()
+        )
     }
 
     factory {
-        GetWebsocketConnection(get(), get(), get())
+        GetWebsocketConnection(
+            get(),
+            get(),
+            get()
+        )
     }
 
     factory {
-        GetPeerConnection(get(), get(), get())
+        GetPeerConnection(
+            get(),
+            get(),
+            get()
+        )
     }
 
     factory {
@@ -129,11 +144,17 @@ val applicationModule = module(override = true) {
 
     // ViewModels
     viewModel {
-        PatientViewModel(get(), get())
+        PatientViewModel(
+            get(),
+            get()
+        )
     }
 
     viewModel {
-        MedicalViewModel(get(), get())
+        MedicalViewModel(
+            get(),
+            get()
+        )
     }
 
     viewModel {
