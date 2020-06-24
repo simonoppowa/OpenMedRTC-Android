@@ -10,6 +10,7 @@ class SplashActivity : BaseActivity() {
         setContentView(R.layout.activity_splash)
 
         checkUserCredentials()
+        finish()
     }
 
     private fun checkUserCredentials() {
