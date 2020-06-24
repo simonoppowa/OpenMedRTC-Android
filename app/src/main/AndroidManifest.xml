@@ -25,10 +25,11 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".features.login.LoginActivity" />
+
         <activity
             android:name=".features.dashboard.DashboardActivity"
             android:theme="@style/AppTheme" />
-
         <activity android:name=".features.video.VideoActivity" />
     </application>
 
