@@ -1,21 +1,23 @@
 package software.openmedrtc.android.features.dashboard
 
 import android.Manifest
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import software.openmedrtc.android.R
 import software.openmedrtc.android.core.platform.BaseActivity
-import software.openmedrtc.android.features.dashboard.medical.MedicalMainFragment
-import software.openmedrtc.android.features.dashboard.patient.PatientMainFragment
+import software.openmedrtc.android.features.dashboard.medical.MedicalDashboardFragment
+import software.openmedrtc.android.features.dashboard.patient.PatientDashboardFragment
 import timber.log.Timber
 
-class MainActivity : BaseActivity() {
+class DashboardActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_dashboard)
 
         checkMediaPermissions()
     }
@@ -24,12 +26,12 @@ class MainActivity : BaseActivity() {
         // TODO Authentication
         if(android.os.Build.VERSION.SDK_INT == 26) {
             openFragment(
-                PatientMainFragment.newInstance(),
+                PatientDashboardFragment.newInstance(),
                 R.id.main_fragment_container
             )
         } else {
             openFragment(
-                MedicalMainFragment.newInstance(),
+                MedicalDashboardFragment.newInstance(),
                 R.id.main_fragment_container
             )
         }
@@ -79,5 +81,8 @@ class MainActivity : BaseActivity() {
     companion object {
         private const val ALL_PERMISSIONS_CODE = 1
         private const val PERMISSION_GRANTED_CODE = PackageManager.PERMISSION_GRANTED
+
+        fun getIntent(context: Context) =
+            Intent(context, DashboardActivity::class.java)
     }
 }
