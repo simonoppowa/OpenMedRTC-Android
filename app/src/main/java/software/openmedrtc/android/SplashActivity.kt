@@ -3,6 +3,7 @@ package software.openmedrtc.android
 import android.os.Bundle
 import software.openmedrtc.android.core.platform.BaseActivity
 import software.openmedrtc.android.features.dashboard.DashboardActivity
+import software.openmedrtc.android.features.login.LoginActivity
 
 class SplashActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,6 +16,7 @@ class SplashActivity : BaseActivity() {
 
     private fun checkUserCredentials() {
         // TODO user authentication
-        startActivity(DashboardActivity.getIntent(this))
+        startActivity(LoginActivity.getIntent(this))
+        // startActivity(DashboardActivity.getIntent(this))
     }
 }
