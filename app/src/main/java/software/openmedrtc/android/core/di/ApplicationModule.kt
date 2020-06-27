@@ -2,6 +2,7 @@ package software.openmedrtc.android.core.di
 
 import android.content.Context
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,13 +19,11 @@ import software.openmedrtc.android.core.helper.FrontVideoCapturer
 import software.openmedrtc.android.core.helper.JsonParser
 import software.openmedrtc.android.features.dashboard.medical.MedicalViewModel
 import software.openmedrtc.android.features.connection.websocket.PatientAdapter
-import software.openmedrtc.android.features.connection.rest.GetMedicals
-import software.openmedrtc.android.features.connection.rest.MedicalsAdapter
 import software.openmedrtc.android.features.dashboard.patient.PatientViewModel
-import software.openmedrtc.android.features.connection.rest.UserRepository
-import software.openmedrtc.android.features.connection.rest.UserService
 import software.openmedrtc.android.features.connection.*
+import software.openmedrtc.android.features.connection.entity.UserDTO
 import software.openmedrtc.android.features.connection.peerconnection.GetPeerConnection
+import software.openmedrtc.android.features.connection.rest.*
 import software.openmedrtc.android.features.connection.sdp.GetSessionDescription
 import software.openmedrtc.android.features.connection.sdp.SessionDescriptionRepository
 import software.openmedrtc.android.features.connection.sdp.SetSessionDescription
@@ -52,7 +51,7 @@ val applicationModule = module(override = true) {
         Retrofit.Builder()
             .baseUrl("$HTTP_PROTOCOL${BuildConfig.BASE_URL}:$PORT")
             .client(get())
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(createGson()))
             .build()
     }
 
@@ -116,6 +115,10 @@ val applicationModule = module(override = true) {
             get(),
             get()
         )
+    }
+
+    factory {
+        AuthenticateUser(get(), get(), get())
     }
 
     factory {
@@ -198,6 +201,9 @@ private fun createClient(): OkHttpClient {
             }
         }).build()
 }
+
+private fun createGson() =
+    GsonBuilder().registerTypeAdapter(UserDTO::class.java, UserDeserializer()).create()
 
 private fun createPeerConnectionFactory(
     context: Context,

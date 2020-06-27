@@ -6,10 +6,17 @@ import android.os.Bundle
 import android.text.Editable
 import android.view.View
 import kotlinx.android.synthetic.main.activity_login.*
+import org.koin.android.ext.android.get
 import software.openmedrtc.android.R
+import software.openmedrtc.android.core.interactor.UseCase
 import software.openmedrtc.android.core.platform.BaseActivity
+import software.openmedrtc.android.features.connection.rest.AuthenticateUser
+import timber.log.Timber
 
 class LoginActivity : BaseActivity() {
+
+    private val authenticateUser: AuthenticateUser = get()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -26,7 +33,12 @@ class LoginActivity : BaseActivity() {
         val inputPassword = txt_input_password.text
 
         if (isValidInput(inputEmail, inputPassword)) {
-            // TODO api call
+            authenticateUser(UseCase.None()) {
+                it.fold({}, {
+                    // TODO
+                })
+            }
+
         } else {
             txt_input_email.error = "Error"
         }
