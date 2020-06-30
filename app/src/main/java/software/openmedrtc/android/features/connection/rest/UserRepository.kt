@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonSyntaxException
 import retrofit2.Call
+import software.openmedrtc.android.core.authentication.Authenticator
 import software.openmedrtc.android.core.functional.Either
 import software.openmedrtc.android.core.functional.Failure
 import software.openmedrtc.android.features.connection.entity.*
@@ -18,11 +19,13 @@ interface UserRepository {
         override fun medicals(): Either<Failure, List<Medical>> {
             return request(
                 userService.medicals(),
-                { it.map { medicalDTO ->
-                    Medical(
-                        medicalDTO
-                    )
-                } },
+                {
+                    it.map { medicalDTO ->
+                        Medical(
+                            medicalDTO
+                        )
+                    }
+                },
                 emptyList()
             )
         }
