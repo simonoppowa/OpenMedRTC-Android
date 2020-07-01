@@ -10,10 +10,10 @@ import kotlinx.android.synthetic.main.activity_login.*
 import org.koin.android.ext.android.get
 import software.openmedrtc.android.R
 import software.openmedrtc.android.core.authentication.Authenticator
-import software.openmedrtc.android.core.interactor.UseCase
 import software.openmedrtc.android.core.platform.BaseActivity
 import software.openmedrtc.android.features.connection.rest.AuthenticateUser
-import timber.log.Timber
+import software.openmedrtc.android.features.dashboard.DashboardActivity
+
 
 class LoginActivity : BaseActivity() {
 
@@ -40,26 +40,47 @@ class LoginActivity : BaseActivity() {
             authUser(inputEmail.toString(), inputPassword.toString())
 
         } else {
-            txt_input_email.error = "Error"
+            setErrorText("Wrong input")
         }
     }
     private fun isValidInput(email: Editable, password: Editable): Boolean {
-        return if (!email.isBlank() || android.util.Patterns.EMAIL_ADDRESS.matcher(email)
+        return if (email.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email)
                 .matches()
         ) {
-            true
-        } else password.isBlank()
+            false
+        } else !password.isBlank()
     }
 
     private fun authUser(email: String, password: String) {
-
         authenticateUser(AuthenticateUser.Params(email, password)) {
             it.fold({
-                println("Server error")
-            }, {
-                // TODO
+                // TODO handle failure
+                setErrorText("Wrong email or password")
+            }, { user ->
+                authenticator.loggedInUser.value = user
+                saveCredentials(user.email, password)
+                startDashboardActivity()
             })
         }
+    }
+
+    private fun startDashboardActivity() {
+        startActivity(DashboardActivity.getIntent(this))
+        finish()
+    }
+
+    private fun saveCredentials(email: String, password: String) {
+        // TODO encrypt credentials
+        val sharedPreferences =
+            getSharedPreferences("Login", Context.MODE_PRIVATE)
+        val sharedPreferencesEditor = sharedPreferences.edit()
+        sharedPreferencesEditor.putString("email", email)
+        sharedPreferencesEditor.putString("password", password)
+        sharedPreferencesEditor.apply()
+    }
+
+    private fun setErrorText(errorText: String) {
+        txt_input_email.error = errorText
     }
 
     companion object {

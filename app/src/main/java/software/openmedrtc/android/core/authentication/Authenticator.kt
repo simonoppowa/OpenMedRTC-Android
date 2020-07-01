@@ -1,17 +1,21 @@
 package software.openmedrtc.android.core.authentication
 
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
+import androidx.lifecycle.MutableLiveData
 import okhttp3.*
 import okhttp3.Authenticator
 import software.openmedrtc.android.features.connection.entity.Medical
 import software.openmedrtc.android.features.connection.entity.User
 import java.io.IOException
 
+
 class Authenticator {
 
     var okHttpClient: OkHttpClient? = null
-    var loggedInUser: User? = null
+    var loggedInUser: MutableLiveData<User> = MutableLiveData()
 
-    fun isMedical() = loggedInUser is Medical
+    fun isMedical() = loggedInUser.value is Medical
 
     fun createClient(email: String, password: String) {
         okHttpClient = OkHttpClient.Builder()

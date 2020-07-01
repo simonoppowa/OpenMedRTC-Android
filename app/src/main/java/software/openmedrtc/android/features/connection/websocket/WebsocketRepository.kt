@@ -3,8 +3,10 @@ package software.openmedrtc.android.features.connection.websocket
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import software.openmedrtc.android.BuildConfig
+import software.openmedrtc.android.core.authentication.Authenticator
 import software.openmedrtc.android.core.functional.Either
 import software.openmedrtc.android.core.functional.Failure
+import java.lang.NullPointerException
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -13,7 +15,7 @@ interface WebsocketRepository {
 
 
     class WebsocketRepositoryImpl(
-        private val client: OkHttpClient
+        private val authenticator: Authenticator
     ) : WebsocketRepository {
 
         private var websocket: Websocket? = null
@@ -65,6 +67,8 @@ interface WebsocketRepository {
                     override fun onMessage(websocket: Websocket, text: String) {}
                 }
 
+                val client =
+                    authenticator.okHttpClient ?: throw NullPointerException("OkHttpClient null")
                 websocket =
                     Websocket(
                         client,
