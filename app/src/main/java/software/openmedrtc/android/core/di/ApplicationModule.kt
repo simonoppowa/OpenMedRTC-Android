@@ -1,6 +1,7 @@
 package software.openmedrtc.android.core.di
 
 import android.content.Context
+import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.CoroutineDispatcher
@@ -29,6 +30,7 @@ import software.openmedrtc.android.features.connection.sdp.SessionDescriptionRep
 import software.openmedrtc.android.features.connection.sdp.SetSessionDescription
 import software.openmedrtc.android.features.connection.websocket.GetWebsocketConnection
 import software.openmedrtc.android.features.connection.websocket.WebsocketRepository
+import software.openmedrtc.android.features.login.LoginViewModel
 
 // TODO remove mocked data
 private val DEVICE_NAME = "android_" + android.os.Build.VERSION.SDK_INT + "@gmail.com"
@@ -38,6 +40,9 @@ const val PASSWORD = "test"
 private const val HTTP_PROTOCOL = "http://"
 private const val PORT = BuildConfig.BASE_PORT
 
+private const val LOGIN_SP_KEY = "Login"
+const val EMAIL_SPE_KEY = "Email"
+const val PASSWORD_SPE_KEY = "Password"
 
 val applicationModule = module(override = true) {
 
@@ -80,6 +85,11 @@ val applicationModule = module(override = true) {
     // Camera
     single {
         FrontVideoCapturer()
+    }
+
+    // Shared Preferences
+    single {
+        androidApplication().getSharedPreferences(LOGIN_SP_KEY, Context.MODE_PRIVATE)
     }
 
     // Coroutines
@@ -143,6 +153,10 @@ val applicationModule = module(override = true) {
     }
 
     // ViewModels
+    viewModel {
+        LoginViewModel(get(), get(), get())
+    }
+
     viewModel {
         PatientViewModel(
             get(),
