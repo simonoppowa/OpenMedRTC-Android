@@ -15,6 +15,7 @@ import org.webrtc.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import software.openmedrtc.android.BuildConfig
+import software.openmedrtc.android.SplashActivityViewModel
 import software.openmedrtc.android.core.authentication.Authenticator
 import software.openmedrtc.android.core.helper.FrontVideoCapturer
 import software.openmedrtc.android.core.helper.JsonParser
@@ -46,11 +47,17 @@ const val PASSWORD_SPE_KEY = "Password"
 
 val applicationModule = module(override = true) {
 
-    // Connection
+    // Shared Preferences
     single {
-        Authenticator()
+        androidApplication().getSharedPreferences(LOGIN_SP_KEY, Context.MODE_PRIVATE)
     }
 
+    // Authentication
+    single {
+        Authenticator(get())
+    }
+
+    // Connection
     single {
         Retrofit.Builder()
             .baseUrl("$HTTP_PROTOCOL${BuildConfig.BASE_URL}:$PORT")
@@ -85,11 +92,6 @@ val applicationModule = module(override = true) {
     // Camera
     single {
         FrontVideoCapturer()
-    }
-
-    // Shared Preferences
-    single {
-        androidApplication().getSharedPreferences(LOGIN_SP_KEY, Context.MODE_PRIVATE)
     }
 
     // Coroutines
@@ -154,7 +156,11 @@ val applicationModule = module(override = true) {
 
     // ViewModels
     viewModel {
-        LoginViewModel(get(), get(), get())
+        SplashActivityViewModel(get(), get())
+    }
+
+    viewModel {
+        LoginViewModel(get(), get())
     }
 
     viewModel {

@@ -1,16 +1,17 @@
 package software.openmedrtc.android.core.authentication
 
-import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
 import okhttp3.*
 import okhttp3.Authenticator
+import software.openmedrtc.android.core.di.EMAIL_SPE_KEY
+import software.openmedrtc.android.core.di.PASSWORD_SPE_KEY
 import software.openmedrtc.android.features.connection.entity.Medical
 import software.openmedrtc.android.features.connection.entity.User
 import java.io.IOException
 
 
-class Authenticator {
+class Authenticator(private val sharedPreferences: SharedPreferences) {
 
     var okHttpClient: OkHttpClient? = null
     var loggedInUser: MutableLiveData<User> = MutableLiveData()
@@ -35,4 +36,24 @@ class Authenticator {
                 }
             }).build()
     }
+
+    fun initLoggedInUser(user: User, password: String) {
+        loggedInUser.value = user
+        saveUserCredentials(user.email, password)
+    }
+
+    private fun saveUserCredentials(email: String, password: String) {
+        // TODO encrypt credentials
+        val sharedPreferencesEditor = sharedPreferences.edit()
+        sharedPreferencesEditor.putString(EMAIL_SPE_KEY, email)
+        sharedPreferencesEditor.putString(PASSWORD_SPE_KEY, password)
+        sharedPreferencesEditor.apply()
+    }
+
+    fun getSavedEmail(): String? =
+        sharedPreferences.getString(EMAIL_SPE_KEY, null)
+
+    fun getSavedPassword(): String? =
+        sharedPreferences.getString(PASSWORD_SPE_KEY, null)
+
 }
