@@ -7,6 +7,7 @@ import okhttp3.Authenticator
 import software.openmedrtc.android.core.di.EMAIL_SPE_KEY
 import software.openmedrtc.android.core.di.PASSWORD_SPE_KEY
 import software.openmedrtc.android.features.connection.entity.Medical
+import software.openmedrtc.android.features.connection.entity.Patient
 import software.openmedrtc.android.features.connection.entity.User
 import java.io.IOException
 
@@ -17,6 +18,7 @@ class Authenticator(private val sharedPreferences: SharedPreferences) {
     var loggedInUser: MutableLiveData<User> = MutableLiveData()
 
     fun isMedical() = loggedInUser.value is Medical
+    fun isPatient() = loggedInUser.value is Patient
 
     fun createClient(email: String, password: String) {
         okHttpClient = OkHttpClient.Builder()

@@ -7,13 +7,17 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import org.koin.android.ext.android.get
 import software.openmedrtc.android.R
+import software.openmedrtc.android.core.authentication.Authenticator
 import software.openmedrtc.android.core.platform.BaseActivity
 import software.openmedrtc.android.features.dashboard.medical.MedicalDashboardFragment
 import software.openmedrtc.android.features.dashboard.patient.PatientDashboardFragment
 import timber.log.Timber
 
 class DashboardActivity : BaseActivity() {
+
+    private val authenticator: Authenticator = get()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,17 +27,22 @@ class DashboardActivity : BaseActivity() {
     }
 
     private fun initFragment() {
-        // TODO Authentication
-        if(android.os.Build.VERSION.SDK_INT == 26) {
-            openFragment(
-                PatientDashboardFragment.newInstance(),
-                R.id.main_fragment_container
-            )
-        } else {
-            openFragment(
-                MedicalDashboardFragment.newInstance(),
-                R.id.main_fragment_container
-            )
+        when {
+            authenticator.isMedical() -> {
+                openFragment(
+                    MedicalDashboardFragment.newInstance(),
+                    R.id.main_fragment_container
+                )
+            }
+            authenticator.isPatient() -> {
+                openFragment(
+                    PatientDashboardFragment.newInstance(),
+                    R.id.main_fragment_container
+                )
+            }
+            else -> {
+                // TODO logged in user not valid
+            }
         }
     }
 
@@ -64,8 +73,8 @@ class DashboardActivity : BaseActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        
-        if(requestCode == ALL_PERMISSIONS_CODE && grantResults.size == 2
+
+        if (requestCode == ALL_PERMISSIONS_CODE && grantResults.size == 2
             && grantResults[0] == PERMISSION_GRANTED_CODE
             && grantResults[1] == PERMISSION_GRANTED_CODE
         ) {
