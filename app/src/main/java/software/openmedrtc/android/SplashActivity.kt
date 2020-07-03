@@ -1,6 +1,7 @@
 package software.openmedrtc.android
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import org.koin.android.ext.android.get
 import software.openmedrtc.android.core.platform.BaseActivity
@@ -15,6 +16,7 @@ class SplashActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
+        observeFailure()
         if (splashActivityViewModel.checkUserCredentialsSaved()) {
             observerUserAuth()
             splashActivityViewModel.authenticateUser()
@@ -30,6 +32,12 @@ class SplashActivity : BaseActivity() {
                 startActivity(DashboardActivity.getIntent(this))
                 finish()
             }
+        })
+    }
+
+    private fun observeFailure() {
+        splashActivityViewModel.failure.observe(this, Observer {  failure ->
+            finishWithFailure(failure)
         })
     }
 
