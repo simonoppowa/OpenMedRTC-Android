@@ -1,7 +1,8 @@
 package software.openmedrtc.android.core.di
 
 import android.content.Context
-import android.content.SharedPreferences
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.CoroutineDispatcher
@@ -19,10 +20,8 @@ import software.openmedrtc.android.SplashActivityViewModel
 import software.openmedrtc.android.core.authentication.Authenticator
 import software.openmedrtc.android.core.helper.FrontVideoCapturer
 import software.openmedrtc.android.core.helper.JsonParser
-import software.openmedrtc.android.features.dashboard.medical.MedicalViewModel
-import software.openmedrtc.android.features.connection.websocket.PatientAdapter
-import software.openmedrtc.android.features.dashboard.patient.PatientViewModel
-import software.openmedrtc.android.features.connection.*
+import software.openmedrtc.android.features.connection.MedicalConnectionViewModel
+import software.openmedrtc.android.features.connection.PatientConnectionViewModel
 import software.openmedrtc.android.features.connection.entity.UserDTO
 import software.openmedrtc.android.features.connection.peerconnection.GetPeerConnection
 import software.openmedrtc.android.features.connection.rest.*
@@ -30,8 +29,12 @@ import software.openmedrtc.android.features.connection.sdp.GetSessionDescription
 import software.openmedrtc.android.features.connection.sdp.SessionDescriptionRepository
 import software.openmedrtc.android.features.connection.sdp.SetSessionDescription
 import software.openmedrtc.android.features.connection.websocket.GetWebsocketConnection
+import software.openmedrtc.android.features.connection.websocket.PatientAdapter
 import software.openmedrtc.android.features.connection.websocket.WebsocketRepository
+import software.openmedrtc.android.features.dashboard.medical.MedicalViewModel
+import software.openmedrtc.android.features.dashboard.patient.PatientViewModel
 import software.openmedrtc.android.features.login.LoginViewModel
+
 
 // TODO remove mocked data
 private val DEVICE_NAME = "android_" + android.os.Build.VERSION.SDK_INT + "@gmail.com"
@@ -41,15 +44,27 @@ const val PASSWORD = "test"
 private const val HTTP_PROTOCOL = "http://"
 private const val PORT = BuildConfig.BASE_PORT
 
-private const val LOGIN_SP_KEY = "Login"
 const val EMAIL_SPE_KEY = "Email"
 const val PASSWORD_SPE_KEY = "Password"
 
+private const val FILE_NAME_ESP = "shared_prefs"
+
 val applicationModule = module(override = true) {
 
-    // Shared Preferences
+    // Encryption
     single {
-        androidApplication().getSharedPreferences(LOGIN_SP_KEY, Context.MODE_PRIVATE)
+        MasterKey.Builder(androidApplication(), MasterKey.DEFAULT_MASTER_KEY_ALIAS)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
+    }
+
+    single {
+        EncryptedSharedPreferences.create(
+            androidApplication(),
+            FILE_NAME_ESP,
+            get(),
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
     }
 
     // Authentication
