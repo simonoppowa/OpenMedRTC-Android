@@ -5,7 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.webrtc.*
-import software.openmedrtc.android.core.di.USERNAME
+import software.openmedrtc.android.core.authentication.Authenticator
 import software.openmedrtc.android.core.helper.JsonParser
 import software.openmedrtc.android.core.platform.BaseViewModel
 import software.openmedrtc.android.features.connection.peerconnection.GetPeerConnection
@@ -27,6 +27,7 @@ abstract class ConnectionViewModel(
     private val setSessionDescription: SetSessionDescription,
     private val jsonParser: JsonParser,
     private val coroutineScope: CoroutineScope,
+    private val authenticator: Authenticator,
     val peerConnectionFactory: PeerConnectionFactory
 ) : BaseViewModel() {
 
@@ -74,7 +75,7 @@ abstract class ConnectionViewModel(
                 super.onIceCandidate(p0)
 
                 jsonParser.createIceDataMessageJson(
-                    USERNAME,
+                    getLoggedInUserEmail(),
                     user.email,
                     p0,
                     DataMessage.MESSAGE_TYPE_ICE_CANDIDATE
@@ -183,7 +184,7 @@ abstract class ConnectionViewModel(
             DataMessage.MESSAGE_TYPE_SDP_ANSWER
         }
         jsonParser.createSdpDataMessageJson(
-            USERNAME,
+            getLoggedInUserEmail(),
             user.email,
             sessionDescription,
             dataMessageType
@@ -191,4 +192,8 @@ abstract class ConnectionViewModel(
             websocketConnection.sendMessage(dataMessageJson)
         }
     }
+
+    private fun getLoggedInUserEmail(): String =
+        authenticator.loggedInUser.value?.email ?: ""
+
 }

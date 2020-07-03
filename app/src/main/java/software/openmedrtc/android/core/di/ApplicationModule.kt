@@ -35,12 +35,6 @@ import software.openmedrtc.android.features.dashboard.medical.MedicalViewModel
 import software.openmedrtc.android.features.dashboard.patient.PatientViewModel
 import software.openmedrtc.android.features.login.LoginViewModel
 
-
-// TODO remove mocked data
-private val DEVICE_NAME = "android_" + android.os.Build.VERSION.SDK_INT + "@gmail.com"
-val USERNAME = DEVICE_NAME
-const val PASSWORD = "test"
-
 private const val HTTP_PROTOCOL = "http://"
 private const val PORT = BuildConfig.BASE_PORT
 
@@ -193,11 +187,11 @@ val applicationModule = module(override = true) {
     }
 
     viewModel {
-        PatientConnectionViewModel(get(), get(), get(), get(), get(), get(), get())
+        PatientConnectionViewModel(get(), get(), get(), get(), get(), get(), get(), get())
     }
 
     viewModel {
-        MedicalConnectionViewModel(get(), get(), get(), get(), get(), get(), get())
+        MedicalConnectionViewModel(get(), get(), get(), get(), get(), get(), get(), get())
     }
 
     // Adapters
@@ -235,11 +229,12 @@ private fun createPeerConnectionFactory(
         .createPeerConnectionFactory()
 }
 
-private fun getVideoEncoderFactory(rootEglBase: EglBase) = DefaultVideoEncoderFactory(
-    rootEglBase.eglBaseContext,
-    true,
-    true
-)
+private fun getVideoEncoderFactory(rootEglBase: EglBase) =
+    DefaultVideoEncoderFactory(
+        rootEglBase.eglBaseContext,
+        true,
+        true
+    )
 
 private fun getVideoDecoderFactory(rootEglBase: EglBase) =
     DefaultVideoDecoderFactory(rootEglBase.eglBaseContext)
