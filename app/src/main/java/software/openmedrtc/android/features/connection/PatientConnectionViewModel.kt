@@ -6,6 +6,7 @@ import okhttp3.Response
 import org.webrtc.PeerConnection
 import org.webrtc.PeerConnectionFactory
 import org.webrtc.SessionDescription
+import software.openmedrtc.android.core.authentication.Authenticator
 import software.openmedrtc.android.core.helper.JsonParser
 import software.openmedrtc.android.features.connection.peerconnection.GetPeerConnection
 import software.openmedrtc.android.features.connection.entity.User
@@ -25,6 +26,7 @@ class PatientConnectionViewModel(
     setSessionDescription: SetSessionDescription,
     peerConnectionFactory: PeerConnectionFactory,
     coroutineScope: CoroutineScope,
+    authenticator: Authenticator,
     private val jsonParser: JsonParser
 ) :
     ConnectionViewModel(
@@ -34,6 +36,7 @@ class PatientConnectionViewModel(
         setSessionDescription,
         jsonParser,
         coroutineScope,
+        authenticator,
         peerConnectionFactory
     ) {
 

@@ -1,12 +1,14 @@
 package software.openmedrtc.android.core.di
 
 import android.content.Context
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import okhttp3.*
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -14,46 +16,61 @@ import org.webrtc.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import software.openmedrtc.android.BuildConfig
+import software.openmedrtc.android.SplashActivityViewModel
+import software.openmedrtc.android.core.authentication.Authenticator
 import software.openmedrtc.android.core.helper.FrontVideoCapturer
 import software.openmedrtc.android.core.helper.JsonParser
-import software.openmedrtc.android.features.dashboard.medical.MedicalViewModel
-import software.openmedrtc.android.features.connection.websocket.PatientAdapter
-import software.openmedrtc.android.features.connection.rest.GetMedicals
-import software.openmedrtc.android.features.connection.rest.MedicalsAdapter
-import software.openmedrtc.android.features.dashboard.patient.PatientViewModel
-import software.openmedrtc.android.features.connection.rest.UserRepository
-import software.openmedrtc.android.features.connection.rest.UserService
-import software.openmedrtc.android.features.connection.*
+import software.openmedrtc.android.features.connection.MedicalConnectionViewModel
+import software.openmedrtc.android.features.connection.PatientConnectionViewModel
+import software.openmedrtc.android.features.connection.entity.UserDTO
 import software.openmedrtc.android.features.connection.peerconnection.GetPeerConnection
+import software.openmedrtc.android.features.connection.rest.*
 import software.openmedrtc.android.features.connection.sdp.GetSessionDescription
 import software.openmedrtc.android.features.connection.sdp.SessionDescriptionRepository
 import software.openmedrtc.android.features.connection.sdp.SetSessionDescription
 import software.openmedrtc.android.features.connection.websocket.GetWebsocketConnection
+import software.openmedrtc.android.features.connection.websocket.PatientAdapter
 import software.openmedrtc.android.features.connection.websocket.WebsocketRepository
-import java.io.IOException
-
-// TODO remove mocked data
-private val DEVICE_NAME = "android_" + android.os.Build.VERSION.SDK_INT + "@gmail.com"
-val USERNAME = DEVICE_NAME
-const val PASSWORD = "test"
+import software.openmedrtc.android.features.dashboard.medical.MedicalViewModel
+import software.openmedrtc.android.features.dashboard.patient.PatientViewModel
+import software.openmedrtc.android.features.login.LoginViewModel
 
 private const val HTTP_PROTOCOL = "http://"
 private const val PORT = BuildConfig.BASE_PORT
 
+const val EMAIL_SPE_KEY = "Email"
+const val PASSWORD_SPE_KEY = "Password"
+
+private const val FILE_NAME_ESP = "shared_prefs"
 
 val applicationModule = module(override = true) {
 
-    // Connection
+    // Encryption
     single {
-        createClient()
+        MasterKey.Builder(androidApplication(), MasterKey.DEFAULT_MASTER_KEY_ALIAS)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
     }
 
     single {
+        EncryptedSharedPreferences.create(
+            androidApplication(),
+            FILE_NAME_ESP,
+            get(),
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+    }
+
+    // Authentication
+    single {
+        Authenticator(get())
+    }
+
+    // Connection
+    single {
         Retrofit.Builder()
             .baseUrl("$HTTP_PROTOCOL${BuildConfig.BASE_URL}:$PORT")
-            .client(get())
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+            .addConverterFactory(GsonConverterFactory.create(createGson()))
     }
 
     single {
@@ -92,7 +109,7 @@ val applicationModule = module(override = true) {
 
     // Services
     single {
-        UserService(get())
+        UserService(get(), get())
     }
 
     // Repositories
@@ -116,6 +133,10 @@ val applicationModule = module(override = true) {
             get(),
             get()
         )
+    }
+
+    factory {
+        AuthenticateUser(get(), get(), get(), get())
     }
 
     factory {
@@ -144,6 +165,14 @@ val applicationModule = module(override = true) {
 
     // ViewModels
     viewModel {
+        SplashActivityViewModel(get(), get())
+    }
+
+    viewModel {
+        LoginViewModel(get(), get())
+    }
+
+    viewModel {
         PatientViewModel(
             get(),
             get()
@@ -158,11 +187,11 @@ val applicationModule = module(override = true) {
     }
 
     viewModel {
-        PatientConnectionViewModel(get(), get(), get(), get(), get(), get(), get())
+        PatientConnectionViewModel(get(), get(), get(), get(), get(), get(), get(), get())
     }
 
     viewModel {
-        MedicalConnectionViewModel(get(), get(), get(), get(), get(), get(), get())
+        MedicalConnectionViewModel(get(), get(), get(), get(), get(), get(), get(), get())
     }
 
     // Adapters
@@ -180,24 +209,8 @@ val applicationModule = module(override = true) {
 
 }
 
-private fun createClient(): OkHttpClient {
-    return OkHttpClient.Builder()
-        .authenticator(object : Authenticator {
-            @Throws(IOException::class)
-            override fun authenticate(route: Route?, response: Response): Request? {
-                if (response.request.header("Authorization") != null) {
-                    return null // Give up, we've already attempted to authenticate.
-                }
-
-                println("Authenticating for response: $response")
-                println("Challenges: ${response.challenges()}")
-                val credential = Credentials.basic(USERNAME, PASSWORD)
-                return response.request.newBuilder()
-                    .header("Authorization", credential)
-                    .build()
-            }
-        }).build()
-}
+private fun createGson() =
+    GsonBuilder().registerTypeAdapter(UserDTO::class.java, UserDeserializer()).create()
 
 private fun createPeerConnectionFactory(
     context: Context,
@@ -216,11 +229,12 @@ private fun createPeerConnectionFactory(
         .createPeerConnectionFactory()
 }
 
-private fun getVideoEncoderFactory(rootEglBase: EglBase) = DefaultVideoEncoderFactory(
-    rootEglBase.eglBaseContext,
-    true,
-    true
-)
+private fun getVideoEncoderFactory(rootEglBase: EglBase) =
+    DefaultVideoEncoderFactory(
+        rootEglBase.eglBaseContext,
+        true,
+        true
+    )
 
 private fun getVideoDecoderFactory(rootEglBase: EglBase) =
     DefaultVideoDecoderFactory(rootEglBase.eglBaseContext)
