@@ -20,8 +20,15 @@ package software.openmedrtc.android.core.functional
  * Every feature specific failure should extend [FeatureFailure] class.
  */
 sealed class Failure {
-    object NetworkConnection : Failure()
-    object ServerError : Failure()
+    object NetworkConnectionFailure : Failure()
+    object ServerFailure : Failure()
+    object WebsocketFailure : Failure()
+    object PeerConnectionFailure : Failure()
+    object SdpFailure : Failure()
+    object ParsingFailure: Failure()
+    object CameraFailure: Failure()
+    object IceFailure: Failure()
+    object AuthFailure: Failure()
 
     /** * Extend this class for feature specific failures.*/
     abstract class FeatureFailure: Failure()
