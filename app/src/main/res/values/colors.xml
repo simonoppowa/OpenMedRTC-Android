@@ -7,4 +7,7 @@
     <color name="colorDark">@android:color/background_dark</color>
     <color name="colorGrey">@android:color/darker_gray</color>
     <color name="colorLight">@android:color/background_light</color>
+
+    <color name="colorCallBtn">#CD19D716</color>
+
 </resources>
