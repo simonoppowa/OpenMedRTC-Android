@@ -28,9 +28,9 @@
 
         <ImageView
             android:id="@+id/action_logo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_launcher_foreground"
+            android:layout_width="@dimen/action_bar_logo_size"
+            android:layout_height="@dimen/action_bar_logo_size"
+            android:src="@drawable/ic_logo"
             android:layout_gravity="center" />
 
         <ImageView
