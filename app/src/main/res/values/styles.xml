@@ -6,7 +6,6 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:statusBarColor">@android:color/darker_gray</item>
         <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
-        <item name="actionBarStyle">@style/ActionBar</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme">
@@ -14,10 +13,9 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
-        <item name="android:background">@color/colorLight</item>
-        <item name="background">@color/colorLight</item>
-        <item name="elevation">4dp</item>
+    <style name="ActionBar" parent="ThemeOverlay.AppCompat.ActionBar">
+            <item name="titleEnabled">false</item>
+            <item name="windowActionBar">false</item>
     </style>
 
 </resources>
