@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.list_item_medical.view.*
 import software.openmedrtc.android.R
 import software.openmedrtc.android.features.connection.entity.Medical
@@ -39,9 +40,24 @@ class MedicalsAdapter(private val context: Context) :
 
     class MedicalsViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(medical: Medical, clickListener: (Medical) -> Unit) {
-            view.txtFullName.text = "${medical.title}. ${medical.firstName} ${medical.lastName}"
-            view.txtJobDescription.text = "General Practitioner"
-            view.txtWaitingTime.text = "${medical.waitingTime} min"
+            val context = view.context
+            view.txtFullName.text = context.getString(
+                R.string.medical_name_template,
+                medical.title,
+                medical.firstName,
+                medical.lastName
+            )
+            view.txtJobDescription.text = medical.description
+            view.txtWaitingTime.text = context.getString(R.string.waiting_time_template, medical.waitingTime)
+
+            // Load profile pic with Glide
+            Glide
+                .with(context)
+                .load(medical.profilePicUrl)
+                .centerCrop()
+                .placeholder(R.drawable.ic_account_circle_black_18dp)
+                .circleCrop()
+                .into(view.imgProfilePic)
 
             view.btnCall.setOnClickListener { clickListener(medical) }
         }

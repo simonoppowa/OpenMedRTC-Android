@@ -12,5 +12,7 @@
 
     <string name="user_online">online</string>
     <string name="user_waiting_time_label">Estimated Waiting Time</string>
+    <string name="medical_name_template">%1$s. %2$s %3$s</string>
+    <string name="waiting_time_template">%1$d min</string>
 
 </resources>
