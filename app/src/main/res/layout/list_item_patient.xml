@@ -36,29 +36,30 @@
                 android:id="@+id/imgProfilePic"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
-                android:background="@drawable/ic_launcher_background"
-                android:src="@drawable/ic_launcher_foreground" />
+                android:src="@drawable/ic_account_circle_black_18dp" />
 
             <TextView
                 android:id="@+id/txtOnlineStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="20dp"
+                android:layout_marginTop="4dp"
                 android:layout_gravity="center_horizontal"
-                tools:text="in waiting room..." />
+                android:textSize="12sp"
+                android:text="@string/patient_waiting_room" />
 
 
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/name_info_layout"
-            android:layout_width="170dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/pic_info_layout"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.26">
+            app:layout_constraintVertical_bias="0.36">
 
             <TextView
                 android:id="@+id/txtFullName"
@@ -68,15 +69,15 @@
                 tools:text="John Doe" />
         </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/btnCall"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+        <include
+            layout="@layout/card_call_button"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.75"
             app:layout_constraintStart_toEndOf="@+id/name_info_layout"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@mipmap/ic_launcher_round" />
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
