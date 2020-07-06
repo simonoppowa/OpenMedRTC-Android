@@ -39,9 +39,9 @@ class MedicalsAdapter(private val context: Context) :
 
     class MedicalsViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(medical: Medical, clickListener: (Medical) -> Unit) {
-            view.txtOnlineStatus.text = view.context.getString(R.string.user_online)
-            view.txtFullName.text = "${medical.firstName} ${medical.lastName}"
+            view.txtFullName.text = "${medical.title}. ${medical.firstName} ${medical.lastName}"
             view.txtJobDescription.text = "General Practitioner"
+            view.txtWaitingTime.text = "${medical.waitingTime} min"
 
             view.btnCall.setOnClickListener { clickListener(medical) }
         }
