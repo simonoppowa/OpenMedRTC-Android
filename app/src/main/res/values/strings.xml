@@ -11,5 +11,6 @@
     <string name="login_button">Login</string>
 
     <string name="user_online">online</string>
+    <string name="user_waiting_time_label">Estimated Waiting Time</string>
 
 </resources>

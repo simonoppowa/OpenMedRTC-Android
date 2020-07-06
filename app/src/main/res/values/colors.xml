@@ -9,5 +9,6 @@
     <color name="colorLight">@android:color/background_light</color>
 
     <color name="colorCallBtn">#CD19D716</color>
+    <color name="darker_card_view">#EBEBEB</color>
 
 </resources>
