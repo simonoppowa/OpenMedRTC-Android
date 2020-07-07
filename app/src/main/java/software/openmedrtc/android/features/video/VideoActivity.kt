@@ -39,18 +39,20 @@ class VideoActivity : BaseActivity() {
         initVideoViews()
         when {
             intent.hasExtra(MEDICAL_KEY) -> {
+                // Init Patient Connection
                 val medical = intent.getSerializableExtra(MEDICAL_KEY) as Medical
                 connectionViewModel = get() as PatientConnectionViewModel
+                view_flipper.displayedChild =
+                    view_flipper.indexOfChild(findViewById(R.id.waiting_room_layout))
                 initConnection(medical)
             }
             intent.hasExtra(PATIENT_KEY) -> {
+                // Init Medical Connection
                 val patient = intent.getSerializableExtra(PATIENT_KEY) as Patient
                 connectionViewModel = get() as MedicalConnectionViewModel
                 initConnection(patient)
             }
-            else -> {
-                finishWithFailure(Failure.IntentFailure)
-            }
+            else -> finishWithFailure(Failure.IntentFailure)
         }
     }
 
