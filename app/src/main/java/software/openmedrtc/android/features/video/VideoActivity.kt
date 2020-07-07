@@ -49,9 +49,7 @@ class VideoActivity : BaseActivity() {
                 initConnection(patient)
             }
             else -> {
-                // TODO
-                Timber.e("No intent passed")
-                finish()
+                finishWithFailure(Failure.IntentFailure)
             }
         }
     }
