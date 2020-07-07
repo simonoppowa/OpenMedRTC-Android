@@ -37,6 +37,10 @@ abstract class ConnectionViewModel(
 
     abstract fun initConnection(user: User)
 
+    open fun closeConnection() {
+        peerConnection.value?.close()
+    }
+
     open fun getWebsocketConnection(
         user: User,
         params: GetWebsocketConnection.Params,

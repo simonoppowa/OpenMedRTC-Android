@@ -3,6 +3,7 @@ package software.openmedrtc.android.features.video
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_video.*
 import kotlinx.android.synthetic.main.activity_video_call.*
@@ -131,6 +132,18 @@ class VideoActivity : BaseActivity() {
 
         surface_view_local.setMirror(true)
         surface_view_remote.setMirror(true)
+    }
+
+    fun onHangupButtonClicked(view: View) {
+        finish()
+    }
+
+    override fun onDestroy() {
+        connectionViewModel.closeConnection()
+        rootEglBase.release()
+        surface_view_local.release()
+        surface_view_remote.release()
+        super.onDestroy()
     }
 
     companion object {
