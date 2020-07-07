@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_video.*
+import kotlinx.android.synthetic.main.activity_video_call.*
 import org.koin.android.ext.android.get
 import org.webrtc.EglBase
 import org.webrtc.MediaConstraints
@@ -48,6 +49,7 @@ class VideoActivity : BaseActivity() {
                 initConnection(patient)
             }
             else -> {
+                // TODO
                 Timber.e("No intent passed")
                 finish()
             }
@@ -83,7 +85,8 @@ class VideoActivity : BaseActivity() {
             this,
             Observer { connectionState ->
                 when (connectionState) {
-                    PeerConnection.IceConnectionState.CONNECTED -> view_switcher.showNext()
+                    PeerConnection.IceConnectionState.CONNECTED -> view_flipper.displayedChild =
+                        view_flipper.indexOfChild(findViewById(R.id.video_call_layout))
                     PeerConnection.IceConnectionState.FAILED -> finishWithFailure(Failure.IceFailure)
                     PeerConnection.IceConnectionState.DISCONNECTED -> finish()
                 }
