@@ -6,8 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".features.video.VideoActivity">
 
-    <ViewSwitcher
-        android:id="@+id/view_switcher"
+    <ViewFlipper
+        android:id="@+id/view_flipper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -15,35 +15,27 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-    <!--        TODO-->
-    <FrameLayout
-        android:id="@+id/waiting_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
+<!--        LOADING PAGE-->
+        <include
+            layout="@layout/activity_video_loading"
+            android:id="@+id/loading_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Waiting..." />
-    </FrameLayout>
+            android:layout_height="match_parent" />
 
-<!--        Video-->
-        <FrameLayout
-            android:id="@+id/video_view"
+<!--        WAITING ROOM-->
+        <include
+            layout="@layout/activity_video_waiting_room"
+            android:id="@+id/waiting_room_layout"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent" />
+
+<!--        VIDEO VIEW-->
+        <include
+            layout="@layout/activity_video_call"
+            android:id="@+id/video_call_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="match_parent" />
 
-            <org.webrtc.SurfaceViewRenderer
-                android:id="@+id/surface_view_remote"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            <org.webrtc.SurfaceViewRenderer
-                android:id="@+id/surface_view_local"
-                android:layout_width="150dp"
-                android:layout_height="200dp" />
-        </FrameLayout>
-
-    </ViewSwitcher>
+    </ViewFlipper>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

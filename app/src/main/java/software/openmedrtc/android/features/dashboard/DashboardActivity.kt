@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.Menu
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import org.koin.android.ext.android.get
@@ -22,6 +23,8 @@ class DashboardActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
+        setSupportActionBar(findViewById(R.id.toolbar_dashboard))
+        supportActionBar?.setDisplayShowTitleEnabled(false);
 
         checkMediaPermissions()
     }

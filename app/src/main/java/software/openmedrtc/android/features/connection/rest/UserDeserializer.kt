@@ -23,13 +23,14 @@ class UserDeserializer: JsonDeserializer<UserDTO> {
         val title: String = jsonObject.get("title").asString
         val firstName: String = jsonObject.get("firstName").asString
         val lastName: String = jsonObject.get("lastName").asString
+        val profilePicUrl: String = jsonObject.get("profilePicUrl").asString
 
         return if(jsonObject.has("description")) {
             val description: String = jsonObject.get("description").asString
             val waitingTime: Int = jsonObject.get("waitingTime").asInt
-            MedicalDTO(email, title, firstName, lastName, description, waitingTime)
+            MedicalDTO(email, title, firstName, lastName, profilePicUrl, description, waitingTime)
         } else {
-            PatientDTO(email, title, firstName, lastName)
+            PatientDTO(email, title, firstName, lastName, profilePicUrl)
         }
     }
 }
