@@ -3,8 +3,10 @@ package software.openmedrtc.android.features.video
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_video.*
+import kotlinx.android.synthetic.main.activity_video_call.*
 import org.koin.android.ext.android.get
 import org.webrtc.EglBase
 import org.webrtc.MediaConstraints
@@ -38,19 +40,20 @@ class VideoActivity : BaseActivity() {
         initVideoViews()
         when {
             intent.hasExtra(MEDICAL_KEY) -> {
+                // Init Patient Connection
                 val medical = intent.getSerializableExtra(MEDICAL_KEY) as Medical
                 connectionViewModel = get() as PatientConnectionViewModel
+                view_flipper.displayedChild =
+                    view_flipper.indexOfChild(findViewById(R.id.waiting_room_layout))
                 initConnection(medical)
             }
             intent.hasExtra(PATIENT_KEY) -> {
+                // Init Medical Connection
                 val patient = intent.getSerializableExtra(PATIENT_KEY) as Patient
                 connectionViewModel = get() as MedicalConnectionViewModel
                 initConnection(patient)
             }
-            else -> {
-                Timber.e("No intent passed")
-                finish()
-            }
+            else -> finishWithFailure(Failure.IntentFailure)
         }
     }
 
@@ -83,7 +86,8 @@ class VideoActivity : BaseActivity() {
             this,
             Observer { connectionState ->
                 when (connectionState) {
-                    PeerConnection.IceConnectionState.CONNECTED -> view_switcher.showNext()
+                    PeerConnection.IceConnectionState.CONNECTED -> view_flipper.displayedChild =
+                        view_flipper.indexOfChild(findViewById(R.id.video_call_layout))
                     PeerConnection.IceConnectionState.FAILED -> finishWithFailure(Failure.IceFailure)
                     PeerConnection.IceConnectionState.DISCONNECTED -> finish()
                 }
@@ -128,6 +132,18 @@ class VideoActivity : BaseActivity() {
 
         surface_view_local.setMirror(true)
         surface_view_remote.setMirror(true)
+    }
+
+    fun onHangupButtonClicked(view: View) {
+        finish()
+    }
+
+    override fun onDestroy() {
+        connectionViewModel.closeConnection()
+        rootEglBase.release()
+        surface_view_local.release()
+        surface_view_remote.release()
+        super.onDestroy()
     }
 
     companion object {

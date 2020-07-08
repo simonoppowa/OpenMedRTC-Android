@@ -11,4 +11,6 @@
     <color name="colorCallBtn">#CD19D716</color>
     <color name="darker_card_view">#EBEBEB</color>
 
+    <color name="hangup_button">#65FF0000</color>
+
 </resources>
