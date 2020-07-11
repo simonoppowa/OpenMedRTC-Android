@@ -15,5 +15,6 @@
     <string name="patient_waiting_room">In Waiting Room…</string>
     <string name="name_template">%1$s %2$s %3$s</string>
     <string name="waiting_time_template">%1$d min</string>
+    <string name="login_tag">LOGIN</string>
 
 </resources>
