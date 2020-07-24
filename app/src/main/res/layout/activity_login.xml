@@ -14,20 +14,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
+            android:layout_marginTop="-10dp"
             android:orientation="vertical"
             android:weightSum="10">
 
-            <androidx.cardview.widget.CardView
+            <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="-32dp"
-                app:cardBackgroundColor="@color/colorPrimary"
-                app:cardCornerRadius="32dp">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp" />
-            </androidx.cardview.widget.CardView>
+                android:background="@drawable/shape_rounded_corners"
+                android:layout_height="150dp" />
 
         </LinearLayout>
 
@@ -99,10 +93,13 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="24dp"
                         android:layout_marginBottom="24dp"
-                        android:background="#FFFFFF"
+                        android:padding="5dp"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:background="@drawable/shape_rounded_corners"
                         android:gravity="center"
                         android:onClick="onLoginButtonClicked"
-                        android:padding="12dp"
+                        android:textColor="@color/colorLight"
                         android:text="@string/login_button" />
 
                 </LinearLayout>
