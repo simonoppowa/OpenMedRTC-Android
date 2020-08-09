@@ -4,7 +4,7 @@ import java.io.Serializable
 
 
 abstract class User(
-    val email: String,
+    val id: String,
     val title: String,
     val firstName: String,
     val lastName: String,
@@ -13,16 +13,16 @@ abstract class User(
 
 
 class Patient(
-    email: String,
+    id: String,
     title: String,
     firstName: String,
     lastName: String,
     profilePicUrl: String
 ) :
-    User(email, title, firstName, lastName, profilePicUrl) {
+    User(id, title, firstName, lastName, profilePicUrl) {
 
     constructor(patientDTO: PatientDTO) : this(
-        patientDTO.email,
+        patientDTO.id,
         patientDTO.title,
         patientDTO.firstName,
         patientDTO.lastName,
@@ -31,17 +31,17 @@ class Patient(
 }
 
 class Medical(
-    email: String,
+    id: String,
     title: String,
     firstName: String,
     lastName: String,
     profilePicUrl: String,
     val description: String,
     val waitingTime: Int = 15
-) : User(email, title, firstName, lastName, profilePicUrl) {
+) : User(id, title, firstName, lastName, profilePicUrl) {
 
     constructor(medicalDTO: MedicalDTO) : this(
-        medicalDTO.email,
+        medicalDTO.id,
         medicalDTO.title,
         medicalDTO.firstName,
         medicalDTO.lastName,

@@ -38,7 +38,7 @@ import software.openmedrtc.android.features.login.LoginViewModel
 private const val HTTP_PROTOCOL = "http://"
 private const val PORT = BuildConfig.BASE_PORT
 
-const val EMAIL_SPE_KEY = "Email"
+const val ID_SPE_KEY = "Id"
 const val PASSWORD_SPE_KEY = "Password"
 
 private const val FILE_NAME_ESP = "shared_prefs"

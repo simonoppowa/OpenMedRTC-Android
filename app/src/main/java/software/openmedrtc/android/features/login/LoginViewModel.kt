@@ -12,8 +12,8 @@ class LoginViewModel(
 
     val userAuthenticated: MutableLiveData<Boolean> = MutableLiveData()
 
-    fun authUser(email: String, password: String) {
-        authenticateUser(AuthenticateUser.Params(email, password)) {
+    fun authUser(id: String, password: String) {
+        authenticateUser(AuthenticateUser.Params(id, password)) {
             it.fold(::handleFailure) { user ->
                 authenticator.initLoggedInUser(user, password)
                 userAuthenticated.postValue(true)

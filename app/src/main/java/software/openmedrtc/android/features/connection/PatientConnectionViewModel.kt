@@ -43,7 +43,7 @@ class PatientConnectionViewModel(
     override fun initConnection(user: User) {
         getWebsocketConnection(
             user,
-            GetWebsocketConnection.Params(medKey = user.email),
+            GetWebsocketConnection.Params(medKey = user.id),
             ::onGetWebsocketConnectionSuccess
         )
     }

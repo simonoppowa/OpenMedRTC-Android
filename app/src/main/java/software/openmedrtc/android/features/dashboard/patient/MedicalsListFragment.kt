@@ -41,7 +41,7 @@ class MedicalsListFragment : BaseFragment() {
         recyclerViewMedicals.layoutManager = LinearLayoutManager(context)
         recyclerViewMedicals.adapter = medicalsAdapter
         medicalsAdapter.clickListener = { medical ->
-            Timber.d("Medical clicked: ${medical.email}")
+            Timber.d("Medical clicked: ${medical.id}")
             startVideoActivity(medical)
         }
     }
