@@ -53,6 +53,7 @@
             android:id="@+id/img_waiting"
             android:layout_width="300dp"
             android:layout_height="250dp"
+            android:layout_marginBottom="8dp"
             tools:src="@drawable/ic_launcher_foreground"/>
 
         <TextView

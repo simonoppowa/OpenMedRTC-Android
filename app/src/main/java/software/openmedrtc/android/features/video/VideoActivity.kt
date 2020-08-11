@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_video.*
 import kotlinx.android.synthetic.main.activity_video_call.*
 import kotlinx.android.synthetic.main.activity_video_waiting_room.*
@@ -16,6 +17,7 @@ import org.webrtc.SurfaceTextureHelper
 import software.openmedrtc.android.R
 import software.openmedrtc.android.core.functional.Failure
 import software.openmedrtc.android.core.helper.FrontVideoCapturer
+import software.openmedrtc.android.core.helper.ImageUrls.WAITING_ROOM_IMAGE
 import software.openmedrtc.android.core.platform.BaseActivity
 import software.openmedrtc.android.features.connection.entity.Medical
 import software.openmedrtc.android.features.connection.entity.Patient
@@ -98,6 +100,15 @@ class VideoActivity : BaseActivity() {
         view_flipper.displayedChild =
             view_flipper.indexOfChild(findViewById(R.id.waiting_room_layout))
         waiting_time_chronometer.start()
+
+        // Load waiting room pic with Glide
+        Glide
+            .with(this)
+            .load(WAITING_ROOM_IMAGE)
+            .centerCrop()
+            .placeholder(R.drawable.ic_logo)
+            .circleCrop()
+            .into(img_waiting)
     }
 
     private fun initVideoCapture(peerConnection: PeerConnection) {
