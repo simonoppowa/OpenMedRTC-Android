@@ -7,6 +7,7 @@ import android.view.View
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_video.*
 import kotlinx.android.synthetic.main.activity_video_call.*
+import kotlinx.android.synthetic.main.activity_video_waiting_room.*
 import org.koin.android.ext.android.get
 import org.webrtc.EglBase
 import org.webrtc.MediaConstraints
@@ -22,7 +23,6 @@ import software.openmedrtc.android.features.connection.entity.User
 import software.openmedrtc.android.features.connection.ConnectionViewModel
 import software.openmedrtc.android.features.connection.MedicalConnectionViewModel
 import software.openmedrtc.android.features.connection.PatientConnectionViewModel
-import timber.log.Timber
 
 class VideoActivity : BaseActivity() {
 
@@ -43,8 +43,7 @@ class VideoActivity : BaseActivity() {
                 // Init Patient Connection
                 val medical = intent.getSerializableExtra(MEDICAL_KEY) as Medical
                 connectionViewModel = get() as PatientConnectionViewModel
-                view_flipper.displayedChild =
-                    view_flipper.indexOfChild(findViewById(R.id.waiting_room_layout))
+                showWaitingRoom()
                 initConnection(medical)
             }
             intent.hasExtra(PATIENT_KEY) -> {
@@ -93,6 +92,12 @@ class VideoActivity : BaseActivity() {
                 }
             }
         )
+    }
+
+    private fun showWaitingRoom() {
+        view_flipper.displayedChild =
+            view_flipper.indexOfChild(findViewById(R.id.waiting_room_layout))
+        waiting_time_chronometer.start()
     }
 
     private fun initVideoCapture(peerConnection: PeerConnection) {

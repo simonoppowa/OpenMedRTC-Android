@@ -30,15 +30,14 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp" />
 
-        <TextView
+        <Chronometer
+            android:id="@+id/waiting_time_chronometer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-light"
             android:gravity="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textSize="24sp"
-            android:text="00:00"
-            tools:text="01:54" />
+            android:textSize="24sp" />
 
     </LinearLayout>
 
