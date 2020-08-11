@@ -5,8 +5,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_video.*
 import kotlinx.android.synthetic.main.activity_video_call.*
+import kotlinx.android.synthetic.main.activity_video_waiting_room.*
 import org.koin.android.ext.android.get
 import org.webrtc.EglBase
 import org.webrtc.MediaConstraints
@@ -15,6 +17,7 @@ import org.webrtc.SurfaceTextureHelper
 import software.openmedrtc.android.R
 import software.openmedrtc.android.core.functional.Failure
 import software.openmedrtc.android.core.helper.FrontVideoCapturer
+import software.openmedrtc.android.core.helper.ImageUrls.WAITING_ROOM_IMAGE
 import software.openmedrtc.android.core.platform.BaseActivity
 import software.openmedrtc.android.features.connection.entity.Medical
 import software.openmedrtc.android.features.connection.entity.Patient
@@ -22,7 +25,6 @@ import software.openmedrtc.android.features.connection.entity.User
 import software.openmedrtc.android.features.connection.ConnectionViewModel
 import software.openmedrtc.android.features.connection.MedicalConnectionViewModel
 import software.openmedrtc.android.features.connection.PatientConnectionViewModel
-import timber.log.Timber
 
 class VideoActivity : BaseActivity() {
 
@@ -43,8 +45,7 @@ class VideoActivity : BaseActivity() {
                 // Init Patient Connection
                 val medical = intent.getSerializableExtra(MEDICAL_KEY) as Medical
                 connectionViewModel = get() as PatientConnectionViewModel
-                view_flipper.displayedChild =
-                    view_flipper.indexOfChild(findViewById(R.id.waiting_room_layout))
+                showWaitingRoom()
                 initConnection(medical)
             }
             intent.hasExtra(PATIENT_KEY) -> {
@@ -93,6 +94,21 @@ class VideoActivity : BaseActivity() {
                 }
             }
         )
+    }
+
+    private fun showWaitingRoom() {
+        view_flipper.displayedChild =
+            view_flipper.indexOfChild(findViewById(R.id.waiting_room_layout))
+        waiting_time_chronometer.start()
+
+        // Load waiting room pic with Glide
+        Glide
+            .with(this)
+            .load(WAITING_ROOM_IMAGE)
+            .centerCrop()
+            .placeholder(R.drawable.ic_logo)
+            .circleCrop()
+            .into(img_waiting)
     }
 
     private fun initVideoCapture(peerConnection: PeerConnection) {
