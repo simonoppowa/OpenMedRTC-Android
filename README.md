@@ -1,4 +1,9 @@
-<img alt="Logo" src="art/logo_full.png" width="70%" />
+<p align="center">
+  <img alt="Logo" src="art/logo_full.png" width="70%" />
+</p>
+
+### Description
+**OpenMedRTC is an Open-Source Video-Chat Application for doctors. It is based on the WebRTC Project**
 
 
 ### License
