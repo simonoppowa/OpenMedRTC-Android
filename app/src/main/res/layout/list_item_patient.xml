@@ -69,14 +69,16 @@
                 tools:text="John Doe" />
         </LinearLayout>
 
-        <include
-            layout="@layout/card_call_button"
-            android:layout_width="75dp"
-            android:layout_height="75dp"
+        <ImageButton
+            android:id="@+id/btnCallPatient"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_gravity="center"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/shape_call_button"
+            android:src="@drawable/ic_video_call_white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.75"
-            app:layout_constraintStart_toEndOf="@+id/name_info_layout"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
