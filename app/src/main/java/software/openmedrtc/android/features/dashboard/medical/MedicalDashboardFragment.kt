@@ -36,8 +36,8 @@ class MedicalDashboardFragment : BaseFragment() {
     private fun setBottomNavigationViewListener() {
         bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
             when(menuItem.itemId) {
-                R.id.navigation_patients -> {
-                    openFragment(MedicalsListFragment.newInstance(), R.id.patients_list_container)
+                R.id.navigation_waiting_room -> {
+                    openFragment(PatientsListFragment.newInstance(), R.id.patients_list_container)
                     true
                 }
                 else -> false

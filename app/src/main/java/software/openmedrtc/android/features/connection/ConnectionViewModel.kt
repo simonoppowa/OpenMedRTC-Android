@@ -79,8 +79,8 @@ abstract class ConnectionViewModel(
                 super.onIceCandidate(p0)
 
                 jsonParser.createIceDataMessageJson(
-                    getLoggedInUserEmail(),
-                    user.email,
+                    getLoggedInUserId(),
+                    user.id,
                     p0,
                     DataMessage.MESSAGE_TYPE_ICE_CANDIDATE
                 ).fold(::handleFailure) { dataMessageJson ->
@@ -188,8 +188,8 @@ abstract class ConnectionViewModel(
             DataMessage.MESSAGE_TYPE_SDP_ANSWER
         }
         jsonParser.createSdpDataMessageJson(
-            getLoggedInUserEmail(),
-            user.email,
+            getLoggedInUserId(),
+            user.id,
             sessionDescription,
             dataMessageType
         ).fold(::handleFailure) { dataMessageJson ->
@@ -197,7 +197,7 @@ abstract class ConnectionViewModel(
         }
     }
 
-    private fun getLoggedInUserEmail(): String =
-        authenticator.loggedInUser.value?.email ?: ""
+    private fun getLoggedInUserId(): String =
+        authenticator.loggedInUser.value?.id ?: ""
 
 }

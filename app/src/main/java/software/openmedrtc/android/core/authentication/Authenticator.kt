@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
 import okhttp3.*
 import okhttp3.Authenticator
-import software.openmedrtc.android.core.di.EMAIL_SPE_KEY
+import software.openmedrtc.android.core.di.ID_SPE_KEY
 import software.openmedrtc.android.core.di.PASSWORD_SPE_KEY
 import software.openmedrtc.android.features.connection.entity.Medical
 import software.openmedrtc.android.features.connection.entity.Patient
@@ -20,7 +20,7 @@ class Authenticator(private val sharedPreferences: SharedPreferences) {
     fun isMedical() = loggedInUser.value is Medical
     fun isPatient() = loggedInUser.value is Patient
 
-    fun createClient(email: String, password: String) {
+    fun createClient(id: String, password: String) {
         okHttpClient = OkHttpClient.Builder()
             .authenticator(object : Authenticator {
                 @Throws(IOException::class)
@@ -31,7 +31,7 @@ class Authenticator(private val sharedPreferences: SharedPreferences) {
 
                     println("Authenticating for response: $response")
                     println("Challenges: ${response.challenges()}")
-                    val credential = Credentials.basic(email, password)
+                    val credential = Credentials.basic(id, password)
                     return response.request.newBuilder()
                         .header("Authorization", credential)
                         .build()
@@ -41,19 +41,19 @@ class Authenticator(private val sharedPreferences: SharedPreferences) {
 
     fun initLoggedInUser(user: User, password: String) {
         loggedInUser.value = user
-        saveUserCredentials(user.email, password)
+        saveUserCredentials(user.id, password)
     }
 
-    private fun saveUserCredentials(email: String, password: String) {
+    private fun saveUserCredentials(id: String, password: String) {
         // TODO encrypt credentials
         val sharedPreferencesEditor = sharedPreferences.edit()
-        sharedPreferencesEditor.putString(EMAIL_SPE_KEY, email)
+        sharedPreferencesEditor.putString(ID_SPE_KEY, id)
         sharedPreferencesEditor.putString(PASSWORD_SPE_KEY, password)
         sharedPreferencesEditor.apply()
     }
 
-    fun getSavedEmail(): String? =
-        sharedPreferences.getString(EMAIL_SPE_KEY, null)
+    fun getSavedId(): String? =
+        sharedPreferences.getString(ID_SPE_KEY, null)
 
     fun getSavedPassword(): String? =
         sharedPreferences.getString(PASSWORD_SPE_KEY, null)

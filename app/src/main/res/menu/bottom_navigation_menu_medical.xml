@@ -5,7 +5,7 @@
         android:icon="@drawable/ic_account_circle_black_18dp"
         android:title="@string/menu_waiting_room" />
     <item
-        android:id="@+id/navigation_patients"
+        android:id="@+id/navigation_appointments"
         android:icon="@drawable/ic_assignment_black_18dp"
         android:title="@string/menu_appointments" />
     <item

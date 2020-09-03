@@ -6,11 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.card_call_button.view.*
-import kotlinx.android.synthetic.main.list_item_medical.view.*
 import kotlinx.android.synthetic.main.list_item_patient.view.*
-import kotlinx.android.synthetic.main.list_item_patient.view.imgProfilePic
-import kotlinx.android.synthetic.main.list_item_patient.view.txtFullName
 import software.openmedrtc.android.R
 import software.openmedrtc.android.features.connection.entity.Patient
 import kotlin.properties.Delegates
@@ -58,7 +54,7 @@ class PatientAdapter(private val context: Context): RecyclerView.Adapter<Patient
                 .circleCrop()
                 .into(view.imgProfilePic)
 
-            view.btnCall.setOnClickListener { clickListener(patient) }
+            view.btnCallPatient.setOnClickListener { clickListener(patient) }
         }
     }
 }

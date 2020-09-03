@@ -6,9 +6,16 @@
     <string name="menu_appointments">Appointments</string>
     <string name="menu_settings">Settings</string>
 
-    <string name="login_email">Email</string>
+    <string name="login_id">ID</string>
     <string name="login_password">Password</string>
     <string name="login_button">Login</string>
+    <string name="login_error_input">""Wrong input""</string>
+    <string name="login_error_credentials">"Wrong ID or password"</string>
+    <string name="login_tag">LOGIN</string>
+
+    <string name="waiting_note">The doctor will be here soon</string>
+    <string name="waiting_room_title">In Waiting Room</string>
+    <string name="waiting_button_leave">LEAVE</string>
 
     <string name="user_online">online</string>
     <string name="user_waiting_time_label">Estimated Waiting Time</string>

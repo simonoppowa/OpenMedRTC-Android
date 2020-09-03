@@ -6,16 +6,12 @@ import android.os.Bundle
 import android.text.Editable
 import android.view.View
 import androidx.lifecycle.Observer
-import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_login.*
 import org.koin.android.ext.android.get
 import software.openmedrtc.android.R
-import software.openmedrtc.android.core.authentication.Authenticator
 import software.openmedrtc.android.core.functional.Failure
 import software.openmedrtc.android.core.platform.BaseActivity
-import software.openmedrtc.android.features.connection.rest.AuthenticateUser
 import software.openmedrtc.android.features.dashboard.DashboardActivity
-import kotlin.math.log
 
 
 class LoginActivity : BaseActivity() {
@@ -38,7 +34,7 @@ class LoginActivity : BaseActivity() {
     private fun observeFailure() {
         loginViewModel.failure.observe(this, Observer { failure ->
             when (failure) {
-                is Failure.AuthFailure -> setErrorText("Wrong email or password")
+                is Failure.AuthFailure -> setErrorText(getString(R.string.login_error_credentials))
             }
         })
     }
@@ -50,20 +46,19 @@ class LoginActivity : BaseActivity() {
     }
 
     fun onLoginButtonClicked(view: View) {
-        val inputEmail = txt_input_email.text
+        val inputId = txt_input_id.text
         val inputPassword = txt_input_password.text
 
-        if (isValidInput(inputEmail, inputPassword)) {
-            loginViewModel.authUser(inputEmail.toString(), inputPassword.toString())
+        if (isValidInput(inputId, inputPassword)) {
+            loginViewModel.authUser(inputId.toString(), inputPassword.toString())
 
         } else {
-            setErrorText("Wrong input")
+            setErrorText(getString(R.string.login_error_input))
         }
     }
-    private fun isValidInput(email: Editable, password: Editable): Boolean {
-        return if (email.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email)
-                .matches()
-        ) {
+    private fun isValidInput(id: Editable, password: Editable): Boolean {
+        // TODO check input
+        return if (id.isBlank()) {
             false
         } else !password.isBlank()
     }
@@ -74,7 +69,7 @@ class LoginActivity : BaseActivity() {
     }
 
     private fun setErrorText(errorText: String) {
-        txt_input_email.error = errorText
+        txt_input_id.error = errorText
     }
 
     companion object {

@@ -15,9 +15,9 @@ class AuthenticateUser(
     dispatcher: CoroutineDispatcher
 ) : UseCase<User, AuthenticateUser.Params>(scope, dispatcher) {
     override suspend fun run(params: Params): Either<Failure, User> {
-        authenticator.createClient(params.email, params.password)
+        authenticator.createClient(params.id, params.password)
         return userRepository.authenticate()
     }
 
-    data class Params(val email: String, val password: String)
+    data class Params(val id: String, val password: String)
 }

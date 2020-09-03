@@ -14,17 +14,17 @@ class SplashActivityViewModel(
     val userAuthenticated: MutableLiveData<Boolean> = MutableLiveData()
 
     fun checkUserCredentialsSaved(): Boolean {
-        val email = authenticator.getSavedEmail()
+        val id = authenticator.getSavedId()
         val password = authenticator.getSavedPassword()
 
-        return email != null && password != null
+        return id != null && password != null
     }
 
     fun authenticateUser() {
-        val email = authenticator.getSavedEmail()
+        val id = authenticator.getSavedId()
         val password = authenticator.getSavedPassword()
-        if (email != null && password != null) {
-            authenticateUser(AuthenticateUser.Params(email, password)) {
+        if (id != null && password != null) {
+            authenticateUser(AuthenticateUser.Params(id, password)) {
                 it.fold(::handleFailure) { user ->
                     authenticator.initLoggedInUser(user, password)
                     userAuthenticated.postValue(true)

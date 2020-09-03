@@ -34,7 +34,7 @@
         android:src="@drawable/ic_call_end_white_18dp"
         android:background="@drawable/shape_hangup_button"
         android:onClick="onHangupButtonClicked"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

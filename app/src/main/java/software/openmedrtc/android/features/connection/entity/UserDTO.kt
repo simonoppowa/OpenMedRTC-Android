@@ -1,7 +1,7 @@
 package software.openmedrtc.android.features.connection.entity
 
 abstract class UserDTO(
-    val email: String,
+    val id: String,
     val title: String,
     val firstName: String,
     val lastName: String,
@@ -9,16 +9,16 @@ abstract class UserDTO(
 )
 
 class MedicalDTO(
-    email: String,
+    id: String,
     title: String,
     firstName: String,
     lastName: String,
     profilePicUrl: String,
     val description: String,
     val waitingTime: Int
-) : UserDTO(email, title, firstName, lastName, profilePicUrl) {
+) : UserDTO(id, title, firstName, lastName, profilePicUrl) {
     constructor(medical: Medical) : this(
-        medical.email,
+        medical.id,
         medical.title,
         medical.firstName,
         medical.lastName,
@@ -29,15 +29,15 @@ class MedicalDTO(
 }
 
 class PatientDTO(
-    email: String,
+    id: String,
     title: String,
     firstName: String,
     lastName: String,
     profilePicUrl: String
-) : UserDTO(email, title, firstName, lastName, profilePicUrl) {
+) : UserDTO(id, title, firstName, lastName, profilePicUrl) {
 
     constructor(patient: Patient) : this(
-        patient.email,
+        patient.id,
         patient.title,
         patient.firstName,
         patient.lastName,
