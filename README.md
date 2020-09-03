@@ -3,7 +3,13 @@
 </p>
 
 ### Description
-**OpenMedRTC is an Open-Source Video-Chat Application for doctors. It is based on the WebRTC Project**
+**OpenMedRTC is an Open-Source Video-Chat Application for doctors. It is based on the WebRTC Project.**
+
+### Screenshots
+<p align="center">
+  <img alt="Logo" src="art/Screenshot1.png" width="20%" />
+  <img alt="Logo" src="art/Screenshot2.png" width="20%" />
+</p>
 
 
 ### License
